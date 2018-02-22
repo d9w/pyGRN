@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+from copy import deepcopy
 from pygrn import grns
 
 
@@ -36,13 +37,12 @@ def test_diff_grn():
     glength = nin + nout + nreg
     grn = grns.DiffGRN()
     grn.random(nin, nout, nreg)
-    # TODO: use tf_identifiers and the like here
-    grn.identifiers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
-    grn.enhancers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
-    grn.inhibitors = tf.Variable(np.random.rand(glength), dtype = tf.float32)
-    grn.beta = tf.Variable(grn.beta_min + grn.beta_max * np.random.rand(),
+    grn.tf_identifiers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
+    grn.tf_enhancers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
+    grn.tf_inhibitors = tf.Variable(np.random.rand(glength), dtype = tf.float32)
+    grn.tf_beta = tf.Variable(grn.beta_min + grn.beta_max * np.random.rand(),
                            dtype = tf.float32)
-    grn.delta = tf.Variable(grn.delta_min + grn.delta_max * np.random.rand(),
+    grn.tf_delta = tf.Variable(grn.delta_min + grn.delta_max * np.random.rand(),
                            dtype = tf.float32)
 
     grn.setup()
@@ -54,15 +54,19 @@ def test_diff_grn():
 
     with tf.Session() as session:
         session.run(init)
-        print('ids: ', session.run(grn.identifiers))
-        print('enh: ', session.run(grn.enhancers))
-        print('inh: ', session.run(grn.inhibitors))
-        print('beta: ', session.run(grn.beta))
-        print('delta: ', session.run(grn.delta))
+        start_ids = deepcopy(session.run(grn.tf_identifiers))
+        start_enh = deepcopy(session.run(grn.tf_enhancers))
+        start_inh = deepcopy(session.run(grn.tf_inhibitors))
+        start_beta = deepcopy(session.run(grn.tf_beta))
+        start_delta = deepcopy(session.run(grn.tf_delta))
         for step in range(1000):
             session.run(train)
-        print('ids: ', session.run(grn.identifiers))
-        print('enh: ', session.run(grn.enhancers))
-        print('inh: ', session.run(grn.inhibitors))
-        print('beta: ', session.run(grn.beta))
-        print('delta: ', session.run(grn.delta))
+        end_ids = session.run(grn.tf_identifiers)
+        end_enh = session.run(grn.tf_enhancers)
+        end_inh = session.run(grn.tf_inhibitors)
+        end_beta = session.run(grn.tf_beta)
+        end_delta = session.run(grn.tf_delta)
+        assert np.any(start_ids != end_ids)
+        assert np.any(start_enh != end_enh)
+        assert np.any(start_inh != end_inh)
+        assert (np.abs(start_beta - end_beta) + np.abs(start_delta - end_delta)) > 0

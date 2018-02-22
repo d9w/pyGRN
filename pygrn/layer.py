@@ -4,6 +4,7 @@ from keras.engine import Layer
 from keras.engine import InputSpec
 import numpy as np
 
+
 class GRNInit(initializers.Initializer):
     def __init__(self, proteins):
         self.proteins = proteins

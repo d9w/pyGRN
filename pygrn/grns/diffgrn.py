@@ -29,6 +29,8 @@ class DiffGRN(GRN):
         self.tf_delta = tf.convert_to_tensor(self.delta, dtype=tf.float32)
 
     def setup(self):
+        if not hasattr(self, "tf_identifiers"):
+            self.convert_to_tensor()
         self.reset()
         ids = tf.maximum(0.0, tf.minimum(1.0, self.tf_identifiers))
         enh = tf.maximum(0.0, tf.minimum(1.0, self.tf_enhancers))

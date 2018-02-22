@@ -17,8 +17,7 @@ from pygrn import GRNLayer, RecurrentGRNLayer
 
 class Energy(Problem):
 
-    def __init__(self, namestr=datetime.now().isoformat(), learn=True,
-                 root_dir='/projets/reva/'):
+    def __init__(self, namestr=datetime.now().isoformat(), learn=True, root_dir='./'):
 
         data_file = os.path.join(root_dir, 'data/energydata_complete.csv')
         rows = []
@@ -102,7 +101,7 @@ class Energy(Problem):
                             str(self.generation) + ',' + str(i) + ',' + str(train_fit) +
                             ',' + str(test_fit) + '\n')
             # lamarckian evolution
-            layer.set_learned_genes()
+            # layer.set_learned_genes()
         norm_labels = model.predict(self.x_train, batch_size=self.batch_size)[:, 0]
         acc = np.sum(np.abs(norm_labels - self.y_train) < self.error)/len(self.y_train)
         rmse = np.sqrt(np.mean(((norm_labels - self.y_train) *

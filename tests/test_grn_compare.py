@@ -3,7 +3,7 @@ import numpy as np
 from pygrn import grns
 import tensorflow as tf
 
-r_error = 1e-3
+r_error = 1e-2
 
 
 def compare_grns(grn1, grn2):
