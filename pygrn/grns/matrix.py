@@ -49,8 +49,9 @@ class MatrixGRN(GRN):
         regulation = deepcopy(self.concentration)
         regulation[self.num_input:(self.num_input+self.num_output)] = (
             np.zeros(self.num_output))
-        c_diff = self.delta / len(self.concentration) * np.dot(
+        c_diff = self.delta / len(self.identifiers) * np.dot(
             np.transpose(regulation), self.enhance_match - self.inhibit_match)
+        print("Diff: ", c_diff.tolist())
         self.concentration = np.maximum(0.0, self.concentration + c_diff)
         sumconc = sum(self.concentration[self.num_input:])
         if sumconc > 0:
