@@ -17,10 +17,6 @@ class GRN(abc.ABC):
     num_output = 0
     num_regulatory = 0
 
-    beta_min = 0.05
-    beta_max = 2.0
-    delta_min = 0.05
-    delta_max = 2.0
     beta = 0.5
     delta = 0.5
 
