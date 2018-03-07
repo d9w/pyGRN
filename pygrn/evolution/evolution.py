@@ -33,6 +33,10 @@ class Evolution:
         for gen in range(generations):
             self.step()
             self.generation += 1
+        best_fit, best_ind = self.population.get_best()
+        fit = (best_fit*(self.problem.fit_range[1] - self.problem.fit_range[0])
+               + self.problem.fit_range[0])
+        return fit, best_ind
 
     def report(self):
         return
