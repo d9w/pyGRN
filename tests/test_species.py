@@ -1,12 +1,11 @@
-from pygrn.species import Species, Individual
 from pygrn.grns import ClassicGRN
 from pygrn.problems import Random
-from pygrn.evolution import mutation
+from pygrn import evolution
 import numpy as np
 
 
 def test_evaluate():
-    ind = Individual(ClassicGRN())
+    ind = evolution.Individual(ClassicGRN())
     problem = Random()
     ind.grn.random(problem.nin, problem.nout, 1)
     assert ind.fitness == 0.0
@@ -16,11 +15,11 @@ def test_evaluate():
 
 
 def test_sum_adjusted_fitness():
-    species = Species()
+    species = evolution.Species()
     assert species.sum_adjusted_fitness == None
     problem = Random()
     for i in range(10):
-        ind = Individual(ClassicGRN())
+        ind = evolution.Individual(ClassicGRN())
         ind.grn.random(problem.nin, problem.nout, 1)
         species.individuals += [ind]
     assert species.get_adjusted_fitness() == 0.0
@@ -32,14 +31,14 @@ def test_sum_adjusted_fitness():
 
 
 def test_representative_distances():
-    species = Species()
+    species = evolution.Species()
     assert species.sum_adjusted_fitness == None
     problem = Random()
-    rep = Individual(ClassicGRN())
+    rep = evolution.Individual(ClassicGRN())
     rep.grn.random(problem.nin, problem.nout, 1)
     species.representative = rep
     for i in range(10):
-        ind = Individual(mutation.mutate(rep.grn))
+        ind = evolution.Individual(evolution.mutate(rep.grn))
         species.individuals += [ind]
     dists0 = species.get_representative_distances()
     assert np.sum(dists0) > 0

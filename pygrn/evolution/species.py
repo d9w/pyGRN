@@ -1,10 +1,11 @@
+from pygrn import config
 import numpy as np
 import random
 
 
 class Species:
     sum_adjusted_fitness = None
-    species_threshold = 0.15
+    species_threshold = config.START_SPECIES_THRESHOLD
     num_offspring = 0
     best_genome = None
 
@@ -18,13 +19,14 @@ class Species:
         self.num_offspring = 0
         best_genome = None
 
-    def tournament_select(self, tournament_size=3, with_replacement=True):
+    def tournament_select(self):
         tournament = []
-        if with_replacement:
+        if config.TOURNAMENT_WITH_REPLACEMENT:
             tournament = [random.choice(self.individuals) for
-                          k in range(tournamentSize)]
+                          k in range(config.TOURNAMENT_SIZE)]
         else:
-            tournament = random.shuffle(self.individuals)[:tournamentSize]
+            tournament = random.shuffle(
+                self.individuals)[:config.TOURNAMENT_SIZE]
         tournament.sort(key=lambda x: x.fitness, reverse=True)
         return tournament[0]
 
@@ -42,22 +44,3 @@ class Species:
     def get_representative_distances(self):
         return [ind.grn.distance_to(self.representative.grn)
                 for ind in self.individuals]
-
-
-class Individual:
-
-    def __init__(self, grn, evaluated=False, fitness=0.0):
-        self.grn = grn
-        self.evaluated = evaluated
-        self.fitness = fitness
-
-    def get_fitness(self, problem):
-        if not problem.cacheable or not self.evaluated:
-            self.fitness = (problem.eval(self.grn) - problem.fit_range[0]) / (
-                problem.fit_range[1] - problem.fit_range[0])
-            self.evaluated = True
-        return self.fitness
-
-    def clone(self):
-        return Individual(self.grn.clone(), self.evaluated, self.fitness)
-

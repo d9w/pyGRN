@@ -66,6 +66,7 @@ class Static(Problem):
     nin = 1
     nout = 1
     cacheable = False
+    fit_range = [-0.5, 0.5]
 
     def eval(self, grn):
         return 0.0
@@ -76,8 +77,10 @@ class Counter(Problem):
     nout = 4
     cacheable = True
     count = 0
+    fit_range = [-0.5, 0.5]
 
-    def __init__(self, namestr):
+    def __init__(self, namestr=''):
+        self.logfile = 'fits_' + namestr + '.log'
         self.count = 0
 
     def eval(self, grn):
