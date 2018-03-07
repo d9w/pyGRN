@@ -1,4 +1,5 @@
-from pygrn.evolution import Species, Individual, mutate_modify, mutate
+from pygrn.evolution import Species, Individual
+from pygrn.evolution import mutate_modify, mutate, crossover
 from pygrn import config
 import numpy as np
 import random
@@ -25,6 +26,9 @@ class Population:
     def evaluate(self, problem):
         for ind in self.offspring:
             ind.get_fitness(problem)
+
+    def size(self):
+        return np.sum([len(sp.individuals) for sp in self.species])
 
     def speciation(self):
         for sp in self.species:
@@ -91,6 +95,74 @@ class Population:
                     self.species += [new_sp]
                     num_removed -= 1
                     has_added = True
+
+    def adjust_thresholds(self):
+        avg_species_size = config.POPULATION_SIZE / len(self.species)
+        for sp in self.species:
+            if len(sp.individuals) < avg_species_size:
+                sp.species_threshold += config.SPECIES_THRESHOLD_UPDATE
+            else:
+                sp.species_threshold -= config.SPECIES_THRESHOLD_UPDATE
+            sp.species_threshold = min(config.MAX_SPECIES_THRESHOLD,
+                                       max(config.MIN_SPECIES_THRESHOLD,
+                                           sp.species_threshold))
+
+    def set_offspring_count(self):
+        total_adjusted_fitness = 0
+        for sp in self.species:
+            total_adjusted_fitness += sp.get_adjusted_fitness()
+        total_num_offspring = 0
+        for sp in self.species:
+            if (total_adjusted_fitness == 0):
+                sp.num_offspring = int(
+                    config.POPULATION_SIZE/len(self.species))
+            else:
+                sp.num_offspring = int(
+                    (sp.sum_adjusted_fitness/total_adjusted_fitness)*
+                    config.POPULATION_SIZE)
+            total_num_offspring += sp.num_offspring
+
+        # Correcting approximation error
+        # (sometimes species have fewer offspring because of division)
+        while total_num_offspring < config.POPULATION_SIZE:
+            sp = random.choice(self.species)
+            sp.num_offspring += 1
+            total_num_offspring += 1
+
+    def make_offspring(self):
+        self.offspring = []
+        for sp in self.species:
+            if sp.num_offspring == 0:
+                continue
+            species_offspring = []
+            # Create children with crossover
+            for k in range(int(sp.num_offspring * config.CROSSOVER_RATE)):
+                parent1 = sp.tournament_select()
+                parent2 = sp.tournament_select()
+                # Don't use the same parent 2x
+                num_tries = 0
+                while ((parent1 == parent2) and
+                       (num_tries < config.MAX_SELECTION_TRIES)):
+                    parent2 = sp.tournament_select()
+                    num_tries += 1
+                if parent1 != parent2:
+                    species_offspring += [Individual(
+                        crossover(parent1.grn, parent2.grn))]
+            # Create children with mutation
+            for k in range(int(sp.num_offspring * config.MUTATION_RATE)):
+                parent = sp.tournament_select()
+                species_offspring += [Individual(mutate(parent.grn))]
+            # Add elite
+            if len(species_offspring) == sp.num_offspring:
+                species_offspring[np.random.randint(
+                    len(species_offspring))] = sp.get_best_individual()
+            else:
+                species_offspring += [sp.get_best_individual()]
+            # Fill with tournament champions if extra space
+            while len(species_offspring) < sp.num_offspring:
+                species_offspring += [sp.tournament_select().clone()]
+
+            self.offspring += species_offspring
 
     def get_best(self):
         best_fitness = -np.inf

@@ -3,3 +3,4 @@ from .crossover import crossover
 from .individual import Individual
 from .species import Species
 from .population import Population
+from .evolution import Evolution

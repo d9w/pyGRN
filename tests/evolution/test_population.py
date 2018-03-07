@@ -44,3 +44,43 @@ def test_best():
     assert problem.count == config.POPULATION_SIZE
     assert best_fit > 0
 
+
+def test_thresholds():
+    problem = Random()
+    config.INITIALIZATION_DUPLICATION = 8
+    pop = evolution.Population(lambda: ClassicGRN(),
+                               problem.nin, problem.nout)
+    pop.evaluate(problem)
+    pop.speciation()
+    pop.adjust_thresholds()
+    assert np.any([sp.species_threshold for sp in pop.species] !=
+                  config.START_SPECIES_THRESHOLD)
+
+
+def test_offspring_count():
+    problem = Random()
+    config.INITIALIZATION_DUPLICATION = 8
+    pop = evolution.Population(lambda: ClassicGRN(),
+                               problem.nin, problem.nout)
+    pop.evaluate(problem)
+    pop.speciation()
+    pop.adjust_thresholds()
+    pop.set_offspring_count()
+    assert (np.sum([sp.num_offspring for sp in pop.species]) ==
+            config.POPULATION_SIZE)
+
+
+def test_make_offspring():
+    problem = Counter()
+    config.INITIALIZATION_DUPLICATION = 8
+    pop = evolution.Population(lambda: ClassicGRN(),
+                               problem.nin, problem.nout)
+    pop.evaluate(problem)
+    pop.speciation()
+    pop.adjust_thresholds()
+    pop.set_offspring_count()
+    pop.make_offspring()
+    assert problem.count == config.POPULATION_SIZE
+    assert len(pop.offspring) == config.POPULATION_SIZE
+    assert np.any([ind.evaluated for ind in pop.offspring])
+    assert np.any([~ind.evaluated for ind in pop.offspring])
