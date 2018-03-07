@@ -1,3 +1,4 @@
+from pygrn import config
 import numpy as np
 import abc
 import json
@@ -19,10 +20,6 @@ class GRN(abc.ABC):
 
     beta = 0.5
     delta = 0.5
-
-    id_coef = 0.75
-    enh_coef = 0.125
-    inh_coef = 0.125
 
     @abc.abstractmethod
     def __init__(self):
@@ -95,19 +92,19 @@ class GRN(abc.ABC):
         self.inhibitors = np.random.random([grn_size])
         self.enhancers = np.random.random([grn_size])
         self.identifiers = np.random.random([grn_size])
-        self.beta = (np.random.random() * (self.beta_max - self.beta_min) +
-                     self.beta_min)
-        self.delta = (np.random.random() * (self.delta_max - self.delta_min) +
-                      self.delta_min)
+        self.beta = (np.random.random() * (config.BETA_MAX - config.BETA_MIN) +
+                     config.BETA_MIN)
+        self.delta = (np.random.random() * (config.DELTA_MAX - config.DELTA_MIN) +
+                      config.DELTA_MIN)
         return self
 
     def size(self):
         return len(self.identifiers)
 
     def protein_distance(self, other, k, j):
-        return (abs(self.identifiers[k] - other.identifiers[j]) * self.id_coef +
-                abs(self.inhibitors[k] - other.inhibitors[j]) * self.inh_coef +
-                abs(self.enhancers[k] - other.enhancers[j]) * self.enh_coef)
+        return (abs(self.identifiers[k] - other.identifiers[j]) * config.ID_COEF +
+                abs(self.inhibitors[k] - other.inhibitors[j]) * config.INH_COEF +
+                abs(self.enhancers[k] - other.enhancers[j]) * config.ENH_COEF)
 
     def distance_to(self, other):
         """Returns the distance """
@@ -124,23 +121,23 @@ class GRN(abc.ABC):
             gDist = glarge.protein_distance(gsmall, k, k)
             distance += gDist
 
-        # Compare regulatory TODO: aligned
+        # Compare regulatory
         for k in range(glarge.num_input + glarge.num_output, glarge.size()):
             if gsmall.num_regulatory == 0:
-                distance += self.id_coef + self.inh_coef + self.enh_coef
+                distance += config.ID_COEF + config.INH_COEF + config.ENH_COEF
             else:
-                minDist = np.inf
+                min_dist = np.inf
                 for j in range(gsmall.num_input + gsmall.num_output, gsmall.size()):
-                    gDist = glarge.protein_distance(gsmall, k, j)
-                    if minDist > gDist:
-                        minDist = gDist
-                distance += minDist
+                    gdist = glarge.protein_distance(gsmall, k, j)
+                    if gdist < min_dist:
+                        min_dist = gdist
+                distance += min_dist
 
         # Compare dynamics
         distance += (abs(glarge.beta - gsmall.beta) /
-                     (glarge.beta_max - glarge.beta_min))
+                     (config.BETA_MAX - config.BETA_MIN))
         distance += (abs(glarge.delta - gsmall.delta) /
-                     (gsmall.delta_max - glarge.delta_min))
+                     (config.DELTA_MAX - config.DELTA_MIN))
 
         distance /= glarge.size() + 2
         return distance
