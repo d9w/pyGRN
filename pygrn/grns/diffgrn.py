@@ -1,5 +1,6 @@
+from pygrn.grns.base import GRN
+from pygrn import config
 from copy import deepcopy
-from .base import GRN
 import numpy as np
 import tensorflow as tf
 
@@ -35,8 +36,8 @@ class DiffGRN(GRN):
         ids = tf.maximum(0.0, tf.minimum(1.0, self.tf_identifiers))
         enh = tf.maximum(0.0, tf.minimum(1.0, self.tf_enhancers))
         inh = tf.maximum(0.0, tf.minimum(1.0, self.tf_inhibitors))
-        beta = tf.maximum(self.beta_min, tf.minimum(self.beta_max, self.tf_beta))
-        delta = tf.maximum(self.delta_min, tf.minimum(self.delta_max, self.tf_delta))
+        beta = tf.maximum(config.BETA_MIN, tf.minimum(config.BETA_MAX, self.tf_beta))
+        delta = tf.maximum(config.DELTA_MIN, tf.minimum(config.DELTA_MAX, self.tf_delta))
 
         ids = tf.reshape(
             tf.tile(ids, [self.size()]), [self.size(), self.size()])
@@ -99,7 +100,6 @@ class DiffGRN(GRN):
 
     def clone(self):
         g = DiffGRN()
-
         g.identifiers = deepcopy(self.identifiers)
         g.enhancers = deepcopy(self.enhancers)
         g.inhibitors = deepcopy(self.inhibitors)
@@ -109,13 +109,4 @@ class DiffGRN(GRN):
         g.num_input = deepcopy(self.num_input)
         g.num_output = deepcopy(self.num_output)
         g.num_regulatory = deepcopy(self.num_regulatory)
-
-        # TODO: move globals somewhere else
-        g.beta_min = deepcopy(self.beta_min)
-        g.beta_max = deepcopy(self.beta_max)
-        g.delta_min = deepcopy(self.delta_min)
-        g.delta_max = deepcopy(self.delta_max)
-        g.id_coef = deepcopy(self.id_coef)
-        g.enh_coef = deepcopy(self.enh_coef)
-        g.inh_coef = deepcopy(self.inh_coef)
         return g

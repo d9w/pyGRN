@@ -46,7 +46,7 @@ class TFRandom(Problem):
         grn.setup()
         grn.warmup(25)
         fit = 0.0
-        for i in range(100):
+        for i in range(10):
             t1 = datetime.now()
             grn.set_input(np.random.rand(10))
             grn.step()

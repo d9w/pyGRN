@@ -1,25 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from copy import deepcopy
-from pygrn import grns
-
-
-def test_simple():
-    x = tf.Variable(np.random.rand(), name='x', dtype=tf.float32)
-    log_x = tf.log(x)
-    log_x_squared = tf.square(log_x)
-
-    optimizer = tf.train.GradientDescentOptimizer(0.1)
-    train = optimizer.minimize(log_x_squared)
-
-    init = tf.variables_initializer(tf.global_variables())
-
-    with tf.Session() as session:
-        session.run(init)
-        print("starting at", "x:", session.run(x), "log(x)^2:", session.run(log_x_squared))
-        for step in range(10):
-            session.run(train)
-            print("step", step, "x:", session.run(x), "log(x)^2:", session.run(log_x_squared))
+from pygrn import grns, config
 
 
 def diff_square(nin, nout, grn):
@@ -40,9 +22,9 @@ def test_diff_grn():
     grn.tf_identifiers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
     grn.tf_enhancers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
     grn.tf_inhibitors = tf.Variable(np.random.rand(glength), dtype = tf.float32)
-    grn.tf_beta = tf.Variable(grn.beta_min + grn.beta_max * np.random.rand(),
+    grn.tf_beta = tf.Variable(config.BETA_MIN + config.BETA_MAX * np.random.rand(),
                            dtype = tf.float32)
-    grn.tf_delta = tf.Variable(grn.delta_min + grn.delta_max * np.random.rand(),
+    grn.tf_delta = tf.Variable(config.DELTA_MIN + config.DELTA_MAX * np.random.rand(),
                            dtype = tf.float32)
 
     grn.setup()

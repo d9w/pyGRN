@@ -104,23 +104,13 @@ class GPUGRN(ClassicGRN):
 
     def clone(self):
         g = GPUGRN()
-        g.inhibitors = deepcopy(self.inhibitors)
-        g.enhancers = deepcopy(self.enhancers)
         g.identifiers = deepcopy(self.identifiers)
-        g.concentration = deepcopy(self.concentration)
+        g.enhancers = deepcopy(self.enhancers)
+        g.inhibitors = deepcopy(self.inhibitors)
+        g.beta = deepcopy(self.beta)
+        g.delta = deepcopy(self.delta)
 
         g.num_input = deepcopy(self.num_input)
         g.num_output = deepcopy(self.num_output)
         g.num_regulatory = deepcopy(self.num_regulatory)
-
-        g.beta_min = deepcopy(self.beta_min)
-        g.beta_max = deepcopy(self.beta_max)
-        g.delta_min = deepcopy(self.delta_min)
-        g.delta_max = deepcopy(self.delta_max)
-        g.beta = deepcopy(self.beta)
-        g.delta = deepcopy(self.delta)
-
-        g.id_coef = deepcopy(self.id_coef)
-        g.enh_coef = deepcopy(self.enh_coef)
-        g.inh_coef = deepcopy(self.inh_coef)
         return g

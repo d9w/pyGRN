@@ -22,11 +22,11 @@ def test_sum_adjusted_fitness():
         ind = evolution.Individual(ClassicGRN())
         ind.grn.random(problem.nin, problem.nout, 1)
         species.individuals += [ind]
-    assert species.get_adjusted_fitness() == 0.0
+    assert species.get_adjusted_fitness(0.0, 1.0) == 0.0
     assert species.sum_adjusted_fitness == 0.0
     for ind in species.individuals:
         ind.get_fitness(problem)
-    assert species.get_adjusted_fitness() > 0.0
+    assert species.get_adjusted_fitness(0.0, 1.0) > 0.0
     assert species.sum_adjusted_fitness > 0.0
 
 

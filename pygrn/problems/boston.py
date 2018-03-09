@@ -15,7 +15,7 @@ from pygrn import GRNLayer
 class Boston(Problem):
 
     def __init__(self, namestr=datetime.now().isoformat(), learn=True, epochs = 1,
-                 root_dir='/projets/reva/'):
+                 root_dir='.'):
         (self.x_train, self.y_train), (self.x_test, self.y_test) = boston_housing.load_data()
         self.data_mins = np.min(np.vstack((np.min(self.x_train, axis=0),
                                            np.min(self.x_test, axis=0))), axis=0)
@@ -39,7 +39,7 @@ class Boston(Problem):
 
         self.nin = self.x_train.shape[1]
         self.nout = 1
-        self.cacheable = True
+        self.cacheable = False
         self.logfile = os.path.join(root_dir, 'logs/boston_' + namestr + '.log')
         # killfile allows stopping the job via command line due to cluster configuration
         self.killfile = os.path.join(root_dir, 'kf/' + namestr)
@@ -48,9 +48,6 @@ class Boston(Problem):
     def generation_function(self, grneat, generation):
         self.generation = generation
         self.error *= self.error_decrease
-        for sp in grneat.species:
-            for ind in sp.individuals:
-                ind.hasBeenEvaluated = False
 
     def eval(self, grn):
         if not os.path.isfile(self.killfile):
@@ -77,7 +74,7 @@ class Boston(Problem):
                             str(self.generation) + ',' + str(i) + ',' + str(train_fit) +
                             ',' + str(test_fit) + '\n')
             # lamarckian evolution
-            layer.set_learned_genes()
+            # layer.set_learned_genes()
         fit = model.evaluate(self.x_train, self.y_train, verbose=0)
         test_fit = model.evaluate(self.x_test, self.y_test, verbose=0)
         with open(self.logfile, 'a') as f:

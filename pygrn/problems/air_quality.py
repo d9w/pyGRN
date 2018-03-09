@@ -18,7 +18,7 @@ from pygrn import GRNLayer, RecurrentGRNLayer
 class AirQuality(Problem):
 
     def __init__(self, namestr=datetime.now().isoformat(), learn=True, epochs=1,
-                 root_dir='/projets/reva/'):
+                 root_dir='.'):
 
         data_file = os.path.join(root_dir, 'data/normalized_air_quality.csv')
         all_dat = np.genfromtxt(data_file, delimiter=',')
