@@ -28,9 +28,12 @@ class Species:
         tournament.sort(key=lambda x: x.fitness, reverse=True)
         return tournament[0]
 
-    def get_adjusted_fitness(self):
-        self.sum_adjusted_fitness = np.sum(
-            [ind.fitness for ind in self.individuals])/len(self.individuals)
+    def get_adjusted_fitness(self, fit_min, fit_max):
+        sum_fit = 0.0
+        if fit_max > fit_min:
+            for ind in self.individuals:
+                sum_fit += (ind.fitness - fit_min)/(fit_max - fit_min)
+        self.sum_adjusted_fitness = sum_fit/len(self.individuals)
         return self.sum_adjusted_fitness
 
     def get_best_individual(self):

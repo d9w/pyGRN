@@ -10,6 +10,8 @@ class Population:
         self.new_grn_function = new_grn_function
         self.species = []
         self.offspring = []
+        self.fit_min = np.inf
+        self.fit_max = -np.inf
 
         while len(self.offspring) < config.POPULATION_SIZE:
             g = self.new_grn_function()
@@ -25,7 +27,11 @@ class Population:
 
     def evaluate(self, problem):
         for ind in self.offspring:
-            ind.get_fitness(problem)
+            fit = ind.get_fitness(problem)
+            if fit < self.fit_min:
+                self.fit_min = fit
+            if fit > self.fit_max:
+                self.fit_max = fit
 
     def size(self):
         return np.sum([len(sp.individuals) for sp in self.species])
@@ -110,7 +116,7 @@ class Population:
     def set_offspring_count(self):
         total_adjusted_fitness = 0
         for sp in self.species:
-            total_adjusted_fitness += sp.get_adjusted_fitness()
+            total_adjusted_fitness += sp.get_adjusted_fitness(self.fit_min, self.fit_max)
         total_num_offspring = 0
         for sp in self.species:
             if (total_adjusted_fitness == 0):

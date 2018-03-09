@@ -8,7 +8,6 @@ class Problem(abc.ABC):
     nin = 0
     nout = 0
     cacheable = True
-    fit_range = [0.0, 1.0]
 
     def __init__(self, namestr=''):
         self.logfile = 'fits_' + namestr + '.log'
@@ -29,7 +28,6 @@ class Random(Problem):
     nin = 1
     nout = 1
     cacheable = True
-    fit_range = [0.0, 10000]
 
     def generation_function(self, grneat, generation):
         for sp in grneat.species:
@@ -43,7 +41,6 @@ class TFRandom(Problem):
     nin = 10
     nout = 5
     cacheable = False
-    fit_range = [-0.5, 0.5]
 
     def eval(self, grn):
         grn.setup()
@@ -66,7 +63,6 @@ class Static(Problem):
     nin = 1
     nout = 1
     cacheable = False
-    fit_range = [-0.5, 0.5]
 
     def eval(self, grn):
         return 0.0
@@ -77,7 +73,6 @@ class Counter(Problem):
     nout = 4
     cacheable = True
     count = 0
-    fit_range = [0.0, 1.0]
 
     def __init__(self, namestr=''):
         self.logfile = 'fits_' + namestr + '.log'

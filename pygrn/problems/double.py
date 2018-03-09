@@ -8,7 +8,6 @@ class DoubleFrequency(Problem):
         self.nin = 1
         self.nout = 1
         self.cacheable = False
-        self.fit_range = [-1000.0, 0.0]
         self.time = np.arange(0, 1000)
         self.signals = [self.gen_signal(p) for p in [250, 1000]]
         self.targets = [self.gen_signal(p) for p in [125, 500]]

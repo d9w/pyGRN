@@ -22,10 +22,6 @@ class Evolution:
                                      problem.nout)
         self.generation = 0
 
-    def true_fit(self, fit):
-        return (fit*(self.problem.fit_range[1] - self.problem.fit_range[0])
-               + self.problem.fit_range[0])
-
     def step(self):
         self.population.evaluate(self.problem)
         self.population.speciation()
@@ -40,7 +36,7 @@ class Evolution:
         for gen in range(generations):
             self.step()
         best_fit, best_ind = self.population.get_best()
-        return self.true_fit(best_fit), best_ind
+        return best_fit, best_ind
 
     def report(self):
         for species_id in range(len(self.population.species)):
@@ -52,7 +48,7 @@ class Evolution:
                     self.generation, species_id,
                     len(sp.individuals),
                     sp.sum_adjusted_fitness,
-                    self.true_fit(sp_best.fitness),
+                    sp_best.fitness,
                     sp_best.grn.size(),
                     sp.species_threshold,
                     np.mean(sp.get_representative_distances()),
@@ -63,8 +59,7 @@ class Evolution:
             f.write('%s,Generation,%d,%d,%f,%d,%f,%f\n' % (
                 datetime.now().isoformat(),
                 self.generation, self.population.size(),
-                self.true_fit(best_fitness),
-                best_ind.grn.size(),
+                best_fitness, best_ind.grn.size(),
                 fit_mean, fit_std))
         with open(self.grn_file, 'a') as f:
             f.write(str(best_ind.grn) + '\n')
