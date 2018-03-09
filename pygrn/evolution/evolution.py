@@ -6,19 +6,25 @@ import os
 import pathlib
 from copy import deepcopy
 from datetime import datetime
+from uuid import uuid4
 
 
 class Evolution:
 
     def __init__(self, problem, new_grn_function=lambda: ClassicGRN(),
-                 grn_file=datetime.now().isoformat(),
-                 grn_dir='grns'):
+                 run_id=str(uuid4()), grn_dir='grns', log_dir='logs'):
         pathlib.Path(grn_dir).mkdir(parents=True, exist_ok=True)
-        self.grn_file = os.path.join(grn_dir, 'grns_' + grn_file + '.log')
+        pathlib.Path(log_dir).mkdir(parents=True, exist_ok=True)
+        self.grn_file = os.path.join(grn_dir, 'grns_' + run_id + '.log')
+        self.log_file = os.path.join(log_dir, 'gen_' + run_id + '.log')
         self.problem = problem
         self.population = Population(new_grn_function, problem.nin,
                                      problem.nout)
         self.generation = 0
+
+    def true_fit(self, fit):
+        return (fit*(self.problem.fit_range[1] - self.problem.fit_range[0])
+               + self.problem.fit_range[0])
 
     def step(self):
         self.population.evaluate(self.problem)
@@ -28,46 +34,38 @@ class Evolution:
         self.population.make_offspring()
         self.report()
         self.problem.generation_function(self, self.generation)
+        self.generation += 1
 
     def run(self, generations):
         for gen in range(generations):
             self.step()
-            self.generation += 1
         best_fit, best_ind = self.population.get_best()
-        fit = (best_fit*(self.problem.fit_range[1] - self.problem.fit_range[0])
-               + self.problem.fit_range[0])
-        return fit, best_ind
+        return self.true_fit(best_fit), best_ind
 
     def report(self):
-        return
-        idx = 0
-        numIndividuals = 0
-        sumFitness = 0
-        bestFitness = -float('inf')
-        bestGRN = None
-        for sp in self.species:
-            with open(sp.problem.logfile, 'a') as f:
-                f.write( 'Generation\t%d\t%d\t%d\t%f\t%f\t%d\t%f\t%f\t%f\n' %
-                         (generation,
-                          idx,
-                          len(sp.individuals),
-                          sp.sumAdjustedFitness / float(len(sp.individuals)),
-                          sp.getBestGenome().getFitness(sp.problem),
-                          sp.getBestGenome().grn.size(),
-                          sp.speciesThreshold,
-                          np.mean(sp.representative_distances()),
-                          np.mean([i.grn.size() for i in sp.individuals])))
-            # if len(sp.individuals) < self.minSpeciesSize:
-                # print(sorted(sp.representative_distances()))
-            for ind in sp.individuals:
-                sumFitness += ind.getFitness(sp.problem)
-                if ind.getFitness(sp.problem) > bestFitness:
-                    bestFitness = ind.getFitness(sp.problem)
-                    bestGRN = ind
-                numIndividuals += 1
-            idx += 1
-        print( 'Best fitness: %f\tAverage fitness: %f\tPopulation size: %d\tTime: %s' % ( bestFitness, sumFitness/numIndividuals, numIndividuals, str(datetime.now().isoformat())) )
-        print( 'Best individual\n' + str(bestGRN.grn))
-        with open(self.logfile, 'a') as f:
-            f.write(str(bestGRN.grn) + '\n')
+        for species_id in range(len(self.population.species)):
+            sp = self.population.species[species_id]
+            sp_best = sp.get_best_individual()
+            with open(self.log_file, 'a') as f:
+                f.write('%s,Species,%d,%d,%d,%f,%f,%d,%f,%f,%f\n' % (
+                    datetime.now().isoformat(),
+                    self.generation, species_id,
+                    len(sp.individuals),
+                    sp.sum_adjusted_fitness,
+                    self.true_fit(sp_best.fitness),
+                    sp_best.grn.size(),
+                    sp.species_threshold,
+                    np.mean(sp.get_representative_distances()),
+                    np.mean([i.grn.size() for i in sp.individuals])))
+        best_fitness, best_ind = self.population.get_best()
+        fit_mean, fit_std = self.population.get_stats()
+        with open(self.log_file, 'a') as f:
+            f.write('%s,Generation,%d,%d,%f,%d,%f,%f\n' % (
+                datetime.now().isoformat(),
+                self.generation, self.population.size(),
+                self.true_fit(best_fitness),
+                best_ind.grn.size(),
+                fit_mean, fit_std))
+        with open(self.grn_file, 'a') as f:
+            f.write(str(best_ind.grn) + '\n')
 

@@ -34,9 +34,13 @@ class Species:
         return self.sum_adjusted_fitness
 
     def get_best_individual(self):
-        # TODO: don't sort individuals, sort a key
-        self.individuals.sort(key=lambda x: x.fitness, reverse=True)
-        return self.individuals[0]
+        best_fitness = -np.inf
+        best_ind = None
+        for ind in self.individuals:
+            if ind.fitness > best_fitness:
+                best_fitness = ind.fitness
+                best_ind = ind
+        return best_ind
 
     def get_representative_distances(self):
         return [ind.grn.distance_to(self.representative.grn)

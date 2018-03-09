@@ -168,8 +168,14 @@ class Population:
         best_fitness = -np.inf
         best_ind = None
         for sp in self.species:
-            for ind in sp.individuals:
-                if ind.fitness > best_fitness:
-                    best_fitness = ind.fitness
-                    best_ind = ind
+            ind = sp.get_best_individual()
+            if ind.fitness > best_fitness:
+                best_fitness = ind.fitness
+                best_ind = ind
         return (best_fitness, best_ind)
+
+    def get_stats(self):
+        fits = []
+        for sp in self.species:
+            fits += [ind.fitness for ind in sp.individuals]
+        return np.mean(fits), np.std(fits)
