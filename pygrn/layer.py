@@ -25,24 +25,26 @@ class GRNLayer(Layer):
         self.warmup_count = warmup_count
 
     def build(self, input_shape):
-        self.identifiers = self.add_weight(shape=(self.grn.size(),),
-                                           initializer=GRNInit(
-                                               np.copy(self.grn.identifiers)),
-                                           name='identifiers')
-        self.enhancers = self.add_weight(shape=(self.grn.size(),),
-                                         initializer=GRNInit(
-                                             np.copy(self.grn.enhancers)),
-                                         name='enhancers')
-        self.inhibitors = self.add_weight(shape=(self.grn.size(),),
-                                          initializer=GRNInit(
-                                               np.copy(self.grn.inhibitors)),
-                                          name='inhibitors')
-        self.beta = self.add_weight(shape=(1,),
-                                    initializer=initializers.Constant(value=self.grn.beta),
-                                    name='beta')
-        self.delta = self.add_weight(shape=(1,),
-                                    initializer=initializers.Constant(value=self.grn.delta),
-                                    name='delta')
+        self.identifiers = self.add_weight(
+            shape=(self.grn.size(),),
+            initializer=GRNInit(np.copy(self.grn.identifiers)),
+            name='identifiers')
+        self.enhancers = self.add_weight(
+            shape=(self.grn.size(),),
+            initializer=GRNInit(np.copy(self.grn.enhancers)),
+            name='enhancers')
+        self.inhibitors = self.add_weight(
+            shape=(self.grn.size(),),
+            initializer=GRNInit(np.copy(self.grn.inhibitors)),
+            name='inhibitors')
+        self.beta = self.add_weight(
+            shape=(1,),
+            initializer=initializers.Constant(value=self.grn.beta),
+            name='beta')
+        self.delta = self.add_weight(
+            shape=(1,),
+            initializer=initializers.Constant(value=self.grn.delta),
+            name='delta')
 
         self.grn.tf_identifiers = self.identifiers
         self.grn.tf_enhancers = self.enhancers
@@ -88,6 +90,7 @@ class GRNLayer(Layer):
         config = {'florp': False}
         base_config = super(GRNLayer, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+
 
 class RecurrentGRNLayer(GRNLayer):
 

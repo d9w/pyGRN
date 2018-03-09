@@ -18,9 +18,10 @@ def crossover(parent1, parent2):
             child.inhibitors[k] = parent2.inhibitors[k]
             child.enhancers[k] = parent2.enhancers[k]
 
-    child.identifiers = child.identifiers[:(child.num_input+child.num_output)]
-    child.inhibitors = child.inhibitors[:(child.num_input+child.num_output)]
-    child.enhancers = child.enhancers[:(child.num_input+child.num_output)]
+    child.identifiers = child.identifiers[:(child.num_input +
+                                            child.num_output)]
+    child.inhibitors = child.inhibitors[:(child.num_input + child.num_output)]
+    child.enhancers = child.enhancers[:(child.num_input + child.num_output)]
 
     p1range = list(range(parent1.num_input + parent1.num_output,
                          parent1.size()))
@@ -42,7 +43,7 @@ def crossover(parent1, parent2):
             if gdist < min_dist:
                 min_dist = gdist
                 paired_idx = p2idx
-        if paired_idx != None:
+        if paired_idx is not None:
             if np.random.randint(2) == 0:
                 chosen_parent = parent1
                 chosen_idx = p1idx
@@ -51,12 +52,12 @@ def crossover(parent1, parent2):
                 chosen_parent = parent2
                 chosen_idx = p2idx
                 p2_gene_count += 1
-            child.identifiers = np.append(child.identifiers,
-                                          chosen_parent.identifiers[chosen_idx])
-            child.inhibitors = np.append(child.inhibitors,
-                                         chosen_parent.inhibitors[chosen_idx])
-            child.enhancers = np.append(child.enhancers,
-                                        chosen_parent.enhancers[chosen_idx])
+            child.identifiers = np.append(
+                child.identifiers, chosen_parent.identifiers[chosen_idx])
+            child.inhibitors = np.append(
+                child.inhibitors, chosen_parent.inhibitors[chosen_idx])
+            child.enhancers = np.append(
+                child.enhancers, chosen_parent.enhancers[chosen_idx])
             # Remove from consideration again
             p2range = list(set(p2range) - set([p2idx]))
             p1remaining = list(set(p1remaining) - set([p1idx]))

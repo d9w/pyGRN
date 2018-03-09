@@ -1,7 +1,8 @@
-from pygrn import GRNEAT, grns, problems
+from pygrn import grns, problems, evolution
 import argparse
 
-parser = argparse.ArgumentParser(description='Evolve a GRN to classify Boston housing data')
+parser = argparse.ArgumentParser(
+    description='Evolve a GRN to classify Boston housing data')
 parser.add_argument('--no-learn', dest='learn', action='store_const',
                     const=False, default=True,
                     help='Turn off learning')
@@ -11,8 +12,10 @@ parser.add_argument('--no-evo', dest='evo', action='store_const',
 parser.add_argument('--log', type=str, help='Log file')
 parser.add_argument('--problem', type=str, help='Problem', default='Boston')
 parser.add_argument('--epochs', type=int, help='Number of epochs', default=1)
-parser.add_argument('--grns', type=str, help='File of GRNs in string format', default='')
-parser.add_argument('--generation', type=int, help='Generation (for logging)', default=0)
+parser.add_argument('--grns', type=str, help='File of GRNs in string format',
+                    default='')
+parser.add_argument('--generation', type=int, help='Generation (for logging)',
+                    default=0)
 args = parser.parse_args()
 
 p = problems.Boston(args.log, args.learn, args.epochs)
@@ -21,11 +24,8 @@ if args.problem == "AirQuality":
 
 newgrn = lambda: grns.DiffGRN()
 if args.evo:
-    grneat = GRNEAT(newgrn, args.log)
-    grneat.setup(p.nin, p.nout, 50)
-    grneat.initializationDuplication = 10
-    grneat.minSpeciesSize = 5
-    grneat.run(50, p)
+    grneat = evolution.Evolution(p, newgrn, args.log)
+    grneat.run(50)
 elif args.grns:
     with open(args.grns, 'r') as f:
         for g in f.readlines():

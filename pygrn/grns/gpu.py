@@ -15,7 +15,8 @@ class GPUGRN(ClassicGRN):
         self.tf_input_conc = tf.convert_to_tensor(
             self.concentration[0:self.num_input], dtype=tf.float32)
         self.tf_output_conc = tf.convert_to_tensor(
-            self.concentration[self.num_input:(self.num_input+self.num_output)],
+            self.concentration[self.num_input:(self.num_input +
+                                               self.num_output)],
             dtype=tf.float32)
         self.tf_regulatory_conc = tf.convert_to_tensor(
             self.concentration[self.num_input+self.num_output:],
@@ -29,7 +30,8 @@ class GPUGRN(ClassicGRN):
         self.tf_input_conc = tf.convert_to_tensor(
             self.concentration[0:self.num_input], dtype=tf.float32)
         self.tf_output_conc = tf.convert_to_tensor(
-            self.concentration[self.num_input:(self.num_input+self.num_output)],
+            self.concentration[self.num_input:(self.num_input +
+                                               self.num_output)],
             dtype=tf.float32)
         self.tf_regulatory_conc = tf.convert_to_tensor(
             self.concentration[self.num_input+self.num_output:],
@@ -41,13 +43,12 @@ class GPUGRN(ClassicGRN):
         self.tf_input_conc = tf.convert_to_tensor(
             self.concentration[0:self.num_input], dtype=tf.float32)
         self.tf_output_conc = tf.convert_to_tensor(
-            self.concentration[self.num_input:(self.num_input+self.num_output)],
+            self.concentration[self.num_input:(self.num_input +
+                                               self.num_output)],
             dtype=tf.float32)
         self.tf_regulatory_conc = tf.convert_to_tensor(
             self.concentration[self.num_input+self.num_output:],
             dtype=tf.float32)
-        # self.tf_concentration = tf.convert_to_tensor(self.concentration,
-                                                     # dtype=tf.float32)
         self.tf_sigs = tf.convert_to_tensor(self.enhance_match -
                                             self.inhibit_match,
                                             dtype=tf.float32)
@@ -72,13 +73,11 @@ class GPUGRN(ClassicGRN):
 
     def set_input(self, input_t):
         inp_concs = tf.convert_to_tensor(input_t, dtype=tf.float32)
-        # _, concs = tf.split(self.tf_concentration, [self.num_input,
-                         # self.num_regulatory+self.num_output])
         self.tf_input_conc = inp_concs
 
     def step(self):
-        concs = tf.concat([self.tf_input_conc, self.tf_output_conc, self.tf_regulatory_conc],
-                          0)
+        concs = tf.concat([self.tf_input_conc, self.tf_output_conc,
+                           self.tf_regulatory_conc], 0)
         conc_diff = tf.multiply(concs, self.tf_output_mask)
         conc_diff = tf.reshape(conc_diff, [1, self.length])
         conc_diff = tf.matmul(conc_diff, self.tf_sigs)
@@ -86,7 +85,8 @@ class GPUGRN(ClassicGRN):
         concs = tf.add(concs, conc_diff)
         concs = tf.maximum(0.0, concs)
         concs = tf.reshape(concs, [self.length])
-        _, regs = tf.split(concs, [self.num_input, self.num_regulatory+self.num_output])
+        _, regs = tf.split(concs, [self.num_input,
+                                   self.num_regulatory+self.num_output])
         sumconcs = tf.reduce_sum(regs)
         concs = tf.cond(tf.greater(sumconcs, 0),
                         lambda: tf.div(concs, sumconcs), lambda: concs)
@@ -94,8 +94,6 @@ class GPUGRN(ClassicGRN):
             concs, [self.num_input, self.num_output, self.num_regulatory])
 
     def get_output_tensor(self):
-        # _, outs, _ = tf.split(self.tf_concentration,
-                           # [self.num_input, self.num_output, self.num_regulatory])
         return self.tf_output_conc
 
     def get_output(self):

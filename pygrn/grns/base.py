@@ -77,7 +77,8 @@ class GRN(abc.ABC):
         self.identifiers = np.array(g_dict['ids'])
         self.enhancers = np.array(g_dict['enh'])
         self.inhibitors = np.array(g_dict['inh'])
-        self.num_regulatory = len(self.identifiers) - self.num_input - self.num_output
+        self.num_regulatory = (len(self.identifiers) - self.num_input -
+                               self.num_output)
         self.beta = g_dict['beta']
         self.delta = g_dict['delta']
 
@@ -92,9 +93,11 @@ class GRN(abc.ABC):
         self.inhibitors = np.random.random([grn_size])
         self.enhancers = np.random.random([grn_size])
         self.identifiers = np.random.random([grn_size])
-        self.beta = (np.random.random() * (config.BETA_MAX - config.BETA_MIN) +
+        self.beta = (np.random.random() *
+                     (config.BETA_MAX - config.BETA_MIN) +
                      config.BETA_MIN)
-        self.delta = (np.random.random() * (config.DELTA_MAX - config.DELTA_MIN) +
+        self.delta = (np.random.random() *
+                      (config.DELTA_MAX - config.DELTA_MIN) +
                       config.DELTA_MIN)
         return self
 
@@ -102,8 +105,10 @@ class GRN(abc.ABC):
         return len(self.identifiers)
 
     def protein_distance(self, other, k, j):
-        return (abs(self.identifiers[k] - other.identifiers[j]) * config.ID_COEF +
-                abs(self.inhibitors[k] - other.inhibitors[j]) * config.INH_COEF +
+        return (abs(self.identifiers[k] - other.identifiers[j]) *
+                config.ID_COEF +
+                abs(self.inhibitors[k] - other.inhibitors[j]) *
+                config.INH_COEF +
                 abs(self.enhancers[k] - other.enhancers[j]) * config.ENH_COEF)
 
     def distance_to(self, other):
@@ -127,7 +132,8 @@ class GRN(abc.ABC):
                 distance += config.ID_COEF + config.INH_COEF + config.ENH_COEF
             else:
                 min_dist = np.inf
-                for j in range(gsmall.num_input + gsmall.num_output, gsmall.size()):
+                for j in range(gsmall.num_input + gsmall.num_output,
+                               gsmall.size()):
                     gdist = glarge.protein_distance(gsmall, k, j)
                     if gdist < min_dist:
                         min_dist = gdist

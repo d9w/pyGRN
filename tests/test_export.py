@@ -9,9 +9,9 @@ def test_export():
     str_grn = str(grn)
     assert str_grn == json.dumps({'ids': grn.identifiers.tolist(),
                                   'enh': grn.enhancers.tolist(),
-                                   'inh': grn.inhibitors.tolist(),
-                                   'beta': grn.beta,
-                                   'delta': grn.delta})
+                                  'inh': grn.inhibitors.tolist(),
+                                  'beta': grn.beta,
+                                  'delta': grn.delta})
 
 
 def test_import():

@@ -4,6 +4,7 @@ from pygrn import config
 import numpy as np
 import random
 
+
 class Population:
 
     def __init__(self, new_grn_function, nin, nout):
@@ -47,11 +48,11 @@ class Population:
             for spi in range(len(self.species)):
                 sp_dist = self.species[spi].representative.grn.distance_to(
                     ind.grn)
-                if (sp_dist < min_dist and
-                    sp_dist < self.species[spi].species_threshold):
+                if ((sp_dist < min_dist) and
+                    (sp_dist < self.species[spi].species_threshold)):
                     species_match = spi
                     min_dist = sp_dist
-            if species_match != None:
+            if species_match is not None:
                 self.species[species_match].individuals += [ind]
             else:
                 new_sp = Species()
@@ -116,16 +117,17 @@ class Population:
     def set_offspring_count(self):
         total_adjusted_fitness = 0
         for sp in self.species:
-            total_adjusted_fitness += sp.get_adjusted_fitness(self.fit_min, self.fit_max)
+            total_adjusted_fitness += sp.get_adjusted_fitness(self.fit_min,
+                                                              self.fit_max)
         total_num_offspring = 0
         for sp in self.species:
             if (total_adjusted_fitness == 0):
-                sp.num_offspring = int(
-                    config.POPULATION_SIZE/len(self.species))
+                sp.num_offspring = int(config.POPULATION_SIZE /
+                                       len(self.species))
             else:
-                sp.num_offspring = int(
-                    (sp.sum_adjusted_fitness/total_adjusted_fitness)*
-                    config.POPULATION_SIZE)
+                sp.num_offspring = int((sp.sum_adjusted_fitness /
+                                        total_adjusted_fitness) *
+                                       config.POPULATION_SIZE)
             total_num_offspring += sp.num_offspring
 
         # Correcting approximation error

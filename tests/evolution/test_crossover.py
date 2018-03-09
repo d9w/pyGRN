@@ -1,7 +1,5 @@
 from pygrn.grns import ClassicGRN
-from pygrn.problems import Random
-from pygrn import config, evolution
-import numpy as np
+from pygrn import evolution
 
 
 def test_eq_size_crossover():

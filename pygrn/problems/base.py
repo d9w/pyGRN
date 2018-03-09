@@ -37,6 +37,7 @@ class Random(Problem):
     def eval(self, grn):
         return np.random.rand()
 
+
 class TFRandom(Problem):
     nin = 10
     nout = 5
@@ -81,5 +82,3 @@ class Counter(Problem):
     def eval(self, grn):
         self.count += 1
         return np.random.rand()
-
-

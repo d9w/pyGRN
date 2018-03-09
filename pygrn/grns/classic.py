@@ -76,10 +76,13 @@ class ClassicGRN(GRN):
                 for j in range(len(self.identifiers)):
                     if not (j >= self.num_input and
                             j < (self.num_output + self.num_input)):
-                        enhance += self.concentration[j] * self.enhance_match[j,k]
-                        inhibit += self.concentration[j] * self.inhibit_match[j,k]
+                        enhance += (self.concentration[j] *
+                                    self.enhance_match[j, k])
+                        inhibit += (self.concentration[j] *
+                                    self.inhibit_match[j, k])
                 diff = self.delta / len(self.identifiers) * (enhance - inhibit)
-                self.next_concentration[k] = max(0.0, self.concentration[k] + diff)
+                self.next_concentration[k] = max(0.0,
+                                                 self.concentration[k] + diff)
                 sum_concentration += self.next_concentration[k]
         if sum_concentration > 0:
             for k in range(len(self.identifiers)):

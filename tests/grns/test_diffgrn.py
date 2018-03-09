@@ -15,17 +15,24 @@ def diff_square(nin, nout, grn):
 
 
 def test_diff_grn():
-    nin = 10; nout = 10; nreg = 100;
+    nin = 10
+    nout = 10
+    nreg = 100
     glength = nin + nout + nreg
     grn = grns.DiffGRN()
     grn.random(nin, nout, nreg)
-    grn.tf_identifiers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
-    grn.tf_enhancers = tf.Variable(np.random.rand(glength), dtype = tf.float32)
-    grn.tf_inhibitors = tf.Variable(np.random.rand(glength), dtype = tf.float32)
-    grn.tf_beta = tf.Variable(config.BETA_MIN + config.BETA_MAX * np.random.rand(),
-                           dtype = tf.float32)
-    grn.tf_delta = tf.Variable(config.DELTA_MIN + config.DELTA_MAX * np.random.rand(),
-                           dtype = tf.float32)
+    grn.tf_identifiers = tf.Variable(np.random.rand(glength),
+                                     dtype=tf.float32)
+    grn.tf_enhancers = tf.Variable(np.random.rand(glength),
+                                   dtype=tf.float32)
+    grn.tf_inhibitors = tf.Variable(np.random.rand(glength),
+                                    dtype=tf.float32)
+    grn.tf_beta = tf.Variable(config.BETA_MIN +
+                              config.BETA_MAX * np.random.rand(),
+                              dtype=tf.float32)
+    grn.tf_delta = tf.Variable(config.DELTA_MIN +
+                               config.DELTA_MAX * np.random.rand(),
+                               dtype=tf.float32)
 
     grn.setup()
 
@@ -51,4 +58,5 @@ def test_diff_grn():
         assert np.any(start_ids != end_ids)
         assert np.any(start_enh != end_enh)
         assert np.any(start_inh != end_inh)
-        assert (np.abs(start_beta - end_beta) + np.abs(start_delta - end_delta)) > 0
+        assert (np.abs(start_beta - end_beta) +
+                np.abs(start_delta - end_delta)) > 0

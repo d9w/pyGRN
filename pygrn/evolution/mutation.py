@@ -50,11 +50,13 @@ def mutate_modify(parent):
         else:
             child.inhibitors[target] = np.random.random()
     elif target == child.size():
-        child.beta = (np.random.random()*(config.BETA_MAX - config.BETA_MIN)
-                      + config.BETA_MIN)
+        child.beta = (np.random.random() *
+                      (config.BETA_MAX - config.BETA_MIN) +
+                      config.BETA_MIN)
     else:
-        child.delta = (np.random.random()*(config.DELTA_MAX - config.DELTA_MIN)
-                       + config.DELTA_MIN)
+        child.delta = (np.random.random() *
+                       (config.DELTA_MAX - config.DELTA_MIN) +
+                       config.DELTA_MIN)
 
     return child
 
@@ -68,7 +70,7 @@ def mutate(parent):
     """
     child = None
     num_tries = 0
-    while child == None and num_tries < config.MAX_SELECTION_TRIES:
+    while child is None and num_tries < config.MAX_SELECTION_TRIES:
         r = np.random.random()
         if r < config.MUTATION_ADD_RATE:
             child = mutate_add(parent)

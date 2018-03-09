@@ -11,11 +11,13 @@ class DiffGRN(GRN):
         pass
 
     def reset(self):
-        self.tf_input_conc = tf.multiply(1.0/self.size(), tf.ones([self.num_input]))
-        self.tf_output_conc =  tf.multiply(1.0/self.size(), tf.ones([self.num_output]))
-        self.tf_regulatory_conc =  tf.multiply(1.0/self.size(), tf.ones([self.num_regulatory]))
+        self.tf_input_conc = tf.multiply(1.0/self.size(),
+                                         tf.ones([self.num_input]))
+        self.tf_output_conc = tf.multiply(1.0/self.size(),
+                                          tf.ones([self.num_output]))
+        self.tf_regulatory_conc = tf.multiply(1.0/self.size(),
+                                              tf.ones([self.num_regulatory]))
         return self
-
 
     def warmup(self, nsteps):
         self.set_input(np.zeros(self.num_input))
@@ -23,9 +25,12 @@ class DiffGRN(GRN):
             self.step()
 
     def convert_to_tensor(self):
-        self.tf_identifiers = tf.convert_to_tensor(self.identifiers, dtype=tf.float32)
-        self.tf_enhancers = tf.convert_to_tensor(self.enhancers, dtype=tf.float32)
-        self.tf_inhibitors = tf.convert_to_tensor(self.inhibitors, dtype=tf.float32)
+        self.tf_identifiers = tf.convert_to_tensor(self.identifiers,
+                                                   dtype=tf.float32)
+        self.tf_enhancers = tf.convert_to_tensor(self.enhancers,
+                                                 dtype=tf.float32)
+        self.tf_inhibitors = tf.convert_to_tensor(self.inhibitors,
+                                                  dtype=tf.float32)
         self.tf_beta = tf.convert_to_tensor(self.beta, dtype=tf.float32)
         self.tf_delta = tf.convert_to_tensor(self.delta, dtype=tf.float32)
 
@@ -36,8 +41,10 @@ class DiffGRN(GRN):
         ids = tf.maximum(0.0, tf.minimum(1.0, self.tf_identifiers))
         enh = tf.maximum(0.0, tf.minimum(1.0, self.tf_enhancers))
         inh = tf.maximum(0.0, tf.minimum(1.0, self.tf_inhibitors))
-        beta = tf.maximum(config.BETA_MIN, tf.minimum(config.BETA_MAX, self.tf_beta))
-        delta = tf.maximum(config.DELTA_MIN, tf.minimum(config.DELTA_MAX, self.tf_delta))
+        beta = tf.maximum(config.BETA_MIN, tf.minimum(config.BETA_MAX,
+                                                      self.tf_beta))
+        delta = tf.maximum(config.DELTA_MIN, tf.minimum(config.DELTA_MAX,
+                                                        self.tf_delta))
 
         ids = tf.reshape(
             tf.tile(ids, [self.size()]), [self.size(), self.size()])
@@ -70,8 +77,8 @@ class DiffGRN(GRN):
         self.tf_input_conc = inp_concs
 
     def step(self):
-        concs = tf.concat([self.tf_input_conc, self.tf_output_conc, self.tf_regulatory_conc],
-                          0)
+        concs = tf.concat([self.tf_input_conc, self.tf_output_conc,
+                           self.tf_regulatory_conc], 0)
         conc_diff = tf.multiply(concs, self.tf_output_mask)
         conc_diff = tf.reshape(conc_diff, [1, self.size()])
         conc_diff = tf.matmul(conc_diff, self.tf_sigs)
@@ -79,7 +86,8 @@ class DiffGRN(GRN):
         concs = tf.add(concs, conc_diff)
         concs = tf.maximum(0.0, concs)
         concs = tf.reshape(concs, [self.size()])
-        _, regs = tf.split(concs, [self.num_input, self.num_regulatory+self.num_output])
+        _, regs = tf.split(concs, [self.num_input,
+                                   self.num_regulatory+self.num_output])
         sumconcs = tf.reduce_sum(regs)
         concs = tf.cond(tf.greater(sumconcs, 0),
                         lambda: tf.div(concs, sumconcs), lambda: concs)

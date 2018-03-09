@@ -1,5 +1,4 @@
 from pygrn.grns import ClassicGRN
-from pygrn.problems import Random
 from pygrn import evolution, config
 import numpy as np
 
@@ -15,7 +14,7 @@ def test_mutate_add():
     assert len(parent.enhancers) == len(child.enhancers) - 1
     assert len(parent.identifiers) == len(child.identifiers) - 1
     assert parent.size() == child.size() - 1
-    assert parent.distance_to(child) < 1/(child.size()+2)
+    assert parent.distance_to(child) < 1 / (child.size() + 2)
 
 
 def test_mutate_remove():
@@ -26,7 +25,7 @@ def test_mutate_remove():
     assert len(parent.enhancers) == len(child.enhancers) + 1
     assert len(parent.identifiers) == len(child.identifiers) + 1
     assert parent.size() == child.size() + 1
-    assert parent.distance_to(child) < 1/(parent.size()+2)
+    assert parent.distance_to(child) < 1 / (parent.size() + 2)
 
 
 def test_mutate_modify():
@@ -41,7 +40,7 @@ def test_mutate_modify():
     assert len(parent.enhancers) == len(child.enhancers)
     assert len(parent.identifiers) == len(child.identifiers)
     assert parent.size() == child.size()
-    assert parent.distance_to(child) < 1/(parent.size()+2)
+    assert parent.distance_to(child) < 1 / (parent.size() + 2)
 
 
 def test_mutate():
@@ -50,13 +49,13 @@ def test_mutate():
     config.MUTATION_ADD_RATE = 1.0
     child = evolution.mutate(parent)
     assert parent.size() == child.size() - 1
-    assert parent.distance_to(child) < 1/(child.size()+2)
+    assert parent.distance_to(child) < 1 / (child.size() + 2)
     config.MUTATION_ADD_RATE = 0.0
     config.MUTATION_DEL_RATE = 1.0
     child = evolution.mutate(parent)
     assert parent.size() == child.size() + 1
-    assert parent.distance_to(child) < 1/(child.size()+2)
+    assert parent.distance_to(child) < 1 / (child.size() + 2)
     config.MUTATION_DEL_RATE = 0.0
     child = evolution.mutate(parent)
     assert parent.size() == child.size()
-    assert parent.distance_to(child) < 1/(child.size()+2)
+    assert parent.distance_to(child) < 1 / (child.size() + 2)

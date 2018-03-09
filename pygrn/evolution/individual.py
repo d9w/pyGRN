@@ -13,4 +13,3 @@ class Individual:
 
     def clone(self):
         return Individual(self.grn.clone(), self.evaluated, self.fitness)
-

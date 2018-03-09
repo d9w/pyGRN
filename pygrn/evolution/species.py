@@ -32,8 +32,8 @@ class Species:
         sum_fit = 0.0
         if fit_max > fit_min:
             for ind in self.individuals:
-                sum_fit += (ind.fitness - fit_min)/(fit_max - fit_min)
-        self.sum_adjusted_fitness = sum_fit/len(self.individuals)
+                sum_fit += (ind.fitness - fit_min) / (fit_max - fit_min)
+        self.sum_adjusted_fitness = sum_fit / len(self.individuals)
         return self.sum_adjusted_fitness
 
     def get_best_individual(self):

@@ -16,7 +16,7 @@ def test_evaluate():
 
 def test_sum_adjusted_fitness():
     species = evolution.Species()
-    assert species.sum_adjusted_fitness == None
+    assert species.sum_adjusted_fitness is None
     problem = Random()
     for i in range(10):
         ind = evolution.Individual(ClassicGRN())
@@ -32,7 +32,7 @@ def test_sum_adjusted_fitness():
 
 def test_representative_distances():
     species = evolution.Species()
-    assert species.sum_adjusted_fitness == None
+    assert species.sum_adjusted_fitness is None
     problem = Random()
     rep = evolution.Individual(ClassicGRN())
     rep.grn.random(problem.nin, problem.nout, 1)

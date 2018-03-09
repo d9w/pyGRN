@@ -24,8 +24,10 @@ class MatrixGRN(GRN):
 
     def setup(self):
         ids = np.tile(self.identifiers, [len(self.identifiers), 1])
-        enh = np.transpose(np.tile(self.enhancers, [len(self.identifiers), 1]))
-        inh = np.transpose(np.tile(self.inhibitors, [len(self.identifiers), 1]))
+        enh = np.transpose(np.tile(self.enhancers,
+                                   [len(self.identifiers), 1]))
+        inh = np.transpose(np.tile(self.inhibitors,
+                                   [len(self.identifiers), 1]))
         self.enhance_match = np.exp(-self.beta * np.abs(enh - ids))
         self.inhibit_match = np.exp(-self.beta * np.abs(inh - ids))
 

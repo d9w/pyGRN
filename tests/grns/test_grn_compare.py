@@ -1,7 +1,6 @@
 from copy import deepcopy
 import numpy as np
 from pygrn import grns
-import tensorflow as tf
 
 r_error = 1e-2
 
@@ -18,23 +17,28 @@ def compare_grns(grn1, grn2):
 
     grn1.setup()
     grn2.setup()
-    assert np.sum(np.abs(grn1.get_signatures() - grn2.get_signatures())) < r_error
-    assert np.sum(np.abs(grn1.get_concentrations() - grn2.get_concentrations())) < r_error
+    assert np.sum(np.abs(grn1.get_signatures() -
+                         grn2.get_signatures())) < r_error
+    assert np.sum(np.abs(grn1.get_concentrations() -
+                         grn2.get_concentrations())) < r_error
 
     grn1.warmup(5)
     grn2.warmup(5)
-    assert np.sum(np.abs(grn1.get_output() - grn2.get_output())) < r_error
-    assert np.sum(np.abs(grn1.get_concentrations() - grn2.get_concentrations())) < r_error
+    assert np.sum(np.abs(grn1.get_output() -
+                         grn2.get_output())) < r_error
+    assert np.sum(np.abs(grn1.get_concentrations() -
+                         grn2.get_concentrations())) < r_error
 
     inputs = np.random.rand(5)
     grn1.set_input(inputs)
     grn1.step()
     grn2.set_input(inputs)
     grn2.step()
-    assert np.sum(np.abs(grn1.get_output() - grn2.get_output())) < r_error
-    assert np.sum(np.abs(grn1.get_concentrations() - grn2.get_concentrations())) < r_error
+    assert np.sum(np.abs(grn1.get_output() -
+                         grn2.get_output())) < r_error
+    assert np.sum(np.abs(grn1.get_concentrations() -
+                         grn2.get_concentrations())) < r_error
 
-#TODO: grn equality on load from string
 
 def test_sanity():
     grn1 = grns.ClassicGRN()

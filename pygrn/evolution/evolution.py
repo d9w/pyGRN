@@ -1,10 +1,8 @@
-from pygrn.evolution import Species, Individual, Population
+from pygrn.evolution import Population
 from pygrn.grns import ClassicGRN
 import numpy as np
-import random
 import os
 import pathlib
-from copy import deepcopy
 from datetime import datetime
 from uuid import uuid4
 
@@ -63,4 +61,3 @@ class Evolution:
                 fit_mean, fit_std))
         with open(self.grn_file, 'a') as f:
             f.write(str(best_ind.grn) + '\n')
-

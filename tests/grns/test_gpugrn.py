@@ -1,5 +1,4 @@
 from pygrn import grns, problems
-import tensorflow as tf
 from datetime import datetime
 
 
@@ -12,4 +11,4 @@ def test_gpugrn_simple():
     t2 = datetime.now()
     print(t2 - t1)
     assert random_fitness > 0
-    assert random_fitness < 10*p.nout
+    assert random_fitness < 10 * p.nout
