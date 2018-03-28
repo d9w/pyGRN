@@ -3,6 +3,7 @@ from keras import initializers
 from keras.engine import Layer
 from keras.engine import InputSpec
 import numpy as np
+from pygrn.grns import DiffGRN
 
 
 class GRNInit(initializers.Initializer):
@@ -19,9 +20,10 @@ class GRNInit(initializers.Initializer):
 
 class GRNLayer(Layer):
 
-    def __init__(self, grn, warmup_count=25, **kwargs):
+    def __init__(self, grn_str, warmup_count=25, pmin=0.0, pmax=1.0, **kwargs):
         super(GRNLayer, self).__init__(**kwargs)
-        self.grn = grn
+        self.grn = DiffGRN(pmin, pmax)
+        self.grn.from_str(grn_str)
         self.warmup_count = warmup_count
 
     def build(self, input_shape):
@@ -86,10 +88,22 @@ class GRNLayer(Layer):
         return tuple(output_shape)
 
     def get_config(self):
-        # TODO: useful config
-        config = {'florp': False}
+        config = {'grn_str': str(self.grn),
+                  'warmup_count': self.warmup_count,
+                  'pmin': self.grn.pmin,
+                  'pmax': self.grn.pmax}
         base_config = super(GRNLayer, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+
+
+class FixedGRNLayer(GRNLayer):
+
+    def build(self, input_shape):
+        self.input_spec = InputSpec(min_ndim=2)
+        self.built = True
+
+    def set_learned_genes(self):
+        pass
 
 
 class RecurrentGRNLayer(GRNLayer):

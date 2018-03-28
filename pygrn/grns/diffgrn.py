@@ -7,8 +7,9 @@ import tensorflow as tf
 
 class DiffGRN(GRN):
 
-    def __init__(self):
-        pass
+    def __init__(self, pmin=0.0, pmax=1.0):
+        self.pmin = pmin
+        self.pmax = pmax
 
     def reset(self):
         self.tf_input_conc = tf.multiply(1.0/self.size(),
@@ -77,7 +78,9 @@ class DiffGRN(GRN):
         self.tf_input_conc = inp_concs
 
     def step(self):
-        concs = tf.concat([self.tf_input_conc, self.tf_output_conc,
+        inp_concs = (self.tf_input_conc - self.pmin) / (self.pmax - self.pmin)
+        inp_concs = tf.minimum(1.0, tf.maximum(0.0, inp_concs))
+        concs = tf.concat([inp_concs, self.tf_output_conc,
                            self.tf_regulatory_conc], 0)
         conc_diff = tf.multiply(concs, self.tf_output_mask)
         conc_diff = tf.reshape(conc_diff, [1, self.size()])
