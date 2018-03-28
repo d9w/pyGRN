@@ -66,7 +66,10 @@ class GRN(abc.ABC):
         pass
 
     def __str__(self):
-        return json.dumps({'ids': self.identifiers.tolist(),
+        return json.dumps({'num_input': int(self.num_input),
+                           'num_output': int(self.num_output),
+                           'num_regulatory': int(self.num_regulatory),
+                           'ids': self.identifiers.tolist(),
                            'enh': self.enhancers.tolist(),
                            'inh': self.inhibitors.tolist(),
                            'beta': self.beta,
@@ -74,11 +77,12 @@ class GRN(abc.ABC):
 
     def from_str(self, grn_str):
         g_dict = json.loads(grn_str)
+        self.num_input = g_dict['num_input']
+        self.num_output = g_dict['num_output']
+        self.num_regulatory = g_dict['num_regulatory']
         self.identifiers = np.array(g_dict['ids'])
         self.enhancers = np.array(g_dict['enh'])
         self.inhibitors = np.array(g_dict['inh'])
-        self.num_regulatory = (len(self.identifiers) - self.num_input -
-                               self.num_output)
         self.beta = g_dict['beta']
         self.delta = g_dict['delta']
 
