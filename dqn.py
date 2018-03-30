@@ -24,7 +24,9 @@ parser.add_argument('--log_dir', type=str, help='Log directory', default='logs')
 args = parser.parse_args()
 
 log_file = os.path.join(args.log_dir, 'fits_' + args.id + '.log')
-p = problems.Gym(log_file, args.learn, args.env, args.steps, args.warmup)
+pclass = eval("problems."+args.problem)
+p = pclass(log_file, args.learn, args.env, args.steps, args.warmup)
+
 newgrn = lambda: grns.DiffGRN()
 
 if args.evo:
@@ -33,19 +35,19 @@ if args.evo:
     if args.grn_file:
         with open(args.grn_file, 'r') as f:
             pcount = 0
-            for g in f.readlines:
+            for g in f.readlines():
                 if pcount < len(grneat.population.offspring):
                     grn = newgrn()
                     grn.from_str(g)
                     ind = evolution.Individual(grn)
-                    grneat.population[pcount] = ind
+                    grneat.population.offspring[pcount] = ind
                     pcount += 1
     grneat.run(args.gens)
 else:
     if args.grn_file:
         with open(args.grn_file, 'r') as f:
             gen = 0
-            for g in f.readlines:
+            for g in f.readlines():
                 grn = newgrn()
                 grn.from_str(g)
                 p.generation = gen

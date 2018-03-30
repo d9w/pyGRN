@@ -6,4 +6,4 @@ from .boston import Boston
 from .eeg import EEG
 from .energy import Energy
 from .air_quality import AirQuality
-from .dqn import Gym
+from .dqn import Gym, Atari
