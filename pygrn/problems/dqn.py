@@ -21,7 +21,9 @@ from .base import Problem
 from pygrn.grns import DiffGRN
 from pygrn.layer import GRNLayer, FixedGRNLayer
 
+
 ATARI_INPUT_SHAPE = (84, 84)
+
 
 class DQNProblem(Problem):
 
@@ -37,6 +39,7 @@ class DQNProblem(Problem):
         self.generation = 0
         self.nin = 20
         self.nout = 20
+        self.cacheable = False
 
     def generation_function(self, grneat, generation):
         self.generation = generation
@@ -47,6 +50,7 @@ class DQNProblem(Problem):
     def eval(self, grn):
         self.eval_count += 1
         self.env.seed(123)
+        np.random.seed(123)
         model = self.get_model(grn)
 
         memory = SequentialMemory(limit=self.nsteps,
@@ -81,7 +85,32 @@ class DQNProblem(Problem):
 
         del model
         K.clear_session()
+        np.random.seed(self.eval_count)
         return fit
+
+
+class SLGym(DQNProblem):
+    processor = None
+    window_length = 1
+
+    def __init__(self, *args, **kwargs):
+        super(SLGym, self).__init__(*args, **kwargs)
+        self.nin = np.prod(self.env.observation_space.shape)
+        self.nout = self.nb_actions
+
+    def get_model(self, grn):
+        grn_str = str(grn)
+        # model start
+        model = Sequential()
+        model.add(Flatten(input_shape=(1,) + self.env.observation_space.shape))
+        # model GRN layer
+        layer = GRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+        if not self.learn:
+            layer = FixedGRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+        model.add(layer)
+
+        return model
+
 
 class Gym(DQNProblem):
     processor = None
@@ -112,6 +141,7 @@ class Gym(DQNProblem):
         model.add(Activation('linear'))
         return model
 
+
 class AtariProcessor(Processor):
     def process_observation(self, observation):
         assert observation.ndim == 3  # (height, width, channel)
@@ -127,6 +157,7 @@ class AtariProcessor(Processor):
 
     def process_reward(self, reward):
         return np.clip(reward, -1., 1.)
+
 
 class Atari(DQNProblem):
     input_shape = ATARI_INPUT_SHAPE
