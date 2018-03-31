@@ -82,13 +82,13 @@ class DQNProblem(Problem):
         with open(self.log_file, 'a') as f:
             if 'episode_reward' in history.history:
                 for i in range(len(history.history['episode_reward'])):
-                    f.write('L,%s,%d,%d,%d,%f\n' % (
-                        datetime.now().isoformat(),
-                        self.generation, self.eval_count, i,
+                    f.write('L,%s,%s,%d,%d,%d,%d,%f\n' % (
+                        datetime.now().isoformat(), self.env_name,
+                        self.generation, self.eval_count, i, self.nsteps,
                         history.history['episode_reward'][i]))
-            f.write('M,%s,%d,%d,%f\n' % (
-                datetime.now().isoformat(),
-                self.generation, self.eval_count, fit))
+            f.write('M,%s,%s,%d,%d,%d,%f\n' % (
+                datetime.now().isoformat(), self.env_name,
+                self.generation, self.eval_count, self.nsteps, fit))
 
         del model
         K.clear_session()
