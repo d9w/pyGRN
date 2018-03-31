@@ -27,11 +27,12 @@ ATARI_INPUT_SHAPE = (84, 84)
 
 class DQNProblem(Problem):
 
-    def __init__(self, log_file, learn=True, env_name='CartPole-v0',
+    def __init__(self, log_file, seed=0, learn=True, env_name='CartPole-v0',
                  nsteps=10000, warmup=10):
         self.log_file = log_file
         self.env = gym.make(env_name)
         self.nb_actions = self.env.action_space.n
+        self.seed = seed
         self.learn = learn
         self.nsteps = nsteps
         self.warmup = warmup
@@ -49,8 +50,8 @@ class DQNProblem(Problem):
 
     def eval(self, grn):
         self.eval_count += 1
-        self.env.seed(123)
-        np.random.seed(123)
+        self.env.seed(self.seed+123)
+        np.random.seed(self.seed+123)
         model = self.get_model(grn)
 
         memory = SequentialMemory(limit=self.nsteps,
@@ -85,7 +86,7 @@ class DQNProblem(Problem):
 
         del model
         K.clear_session()
-        np.random.seed(self.eval_count)
+        np.random.seed(self.seed+self.eval_count)
         return fit
 
 

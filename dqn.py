@@ -1,6 +1,7 @@
 from pygrn import grns, problems, evolution
 import os
 import argparse
+import numpy as np
 
 parser = argparse.ArgumentParser(
     description='Evolve a GRN as a layer in a DQN model for solving tasks')
@@ -11,6 +12,7 @@ parser.add_argument('--no-evo', dest='evo', action='store_const',
                     const=False, default=True,
                     help='Turn off evolution')
 parser.add_argument('--id', type=str, help='Run id for logging')
+parser.add_argument('--seed', type=int, help='Random seed', default=0)
 parser.add_argument('--problem', type=str, help='Problem', default='Gym')
 parser.add_argument('--env', type=str, help='Gym environment', default='CartPole-v0')
 parser.add_argument('--steps', type=int, help='Number of training steps', default=10000)
@@ -25,7 +27,8 @@ args = parser.parse_args()
 
 log_file = os.path.join(args.log_dir, 'fits_' + args.id + '.log')
 pclass = eval("problems."+args.problem)
-p = pclass(log_file, args.learn, args.env, args.steps, args.warmup)
+np.random.seed(args.seed)
+p = pclass(log_file, args.seed, args.learn, args.env, args.steps, args.warmup)
 
 newgrn = lambda: grns.DiffGRN()
 
