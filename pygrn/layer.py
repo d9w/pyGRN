@@ -20,9 +20,9 @@ class GRNInit(initializers.Initializer):
 
 class GRNLayer(Layer):
 
-    def __init__(self, grn_str, warmup_count=25, pmin=0.0, pmax=1.0, **kwargs):
+    def __init__(self, grn_str, warmup_count=0, **kwargs):
         super(GRNLayer, self).__init__(**kwargs)
-        self.grn = DiffGRN(pmin, pmax)
+        self.grn = DiffGRN()
         self.grn.from_str(grn_str)
         self.warmup_count = warmup_count
 
@@ -72,11 +72,21 @@ class GRNLayer(Layer):
         reg_conc = self.grn.tf_regulatory_conc
 
         def grn_func(inp):
+            inpmin = K.tf.reduce_min(inp)
+            inpmax = K.tf.reduce_min(inp)
+            idiff = inpmax - inpmin
+            inp = K.tf.cond(K.tf.greater(idiff, 0),
+                            lambda: (inp - inpmin) / (inpmax - inpmin),
+                            lambda: inp)
             self.grn.tf_input_conc = inp
             self.grn.tf_output_conc = out_conc
             self.grn.tf_regulatory_conc = reg_conc
             self.grn.step()
-            return self.grn.tf_output_conc
+            outs = self.grn.tf_output_conc
+            outs = K.tf.cond(K.tf.greater(idiff, 0),
+                             lambda: (outs - inpmin) / (inpmax - inpmin),
+                             lambda: outs)
+            return outs
 
         return K.tf.map_fn(grn_func, inputs)
 
@@ -89,9 +99,7 @@ class GRNLayer(Layer):
 
     def get_config(self):
         config = {'grn_str': str(self.grn),
-                  'warmup_count': self.warmup_count,
-                  'pmin': self.grn.pmin,
-                  'pmax': self.grn.pmax}
+                  'warmup_count': self.warmup_count}
         base_config = super(GRNLayer, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 

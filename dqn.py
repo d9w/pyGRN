@@ -2,6 +2,7 @@ from pygrn import grns, problems, evolution
 import os
 import argparse
 import numpy as np
+from datetime import datetime
 
 parser = argparse.ArgumentParser(
     description='Evolve a GRN as a layer in a DQN model for solving tasks')
@@ -50,15 +51,25 @@ else:
     if args.grn_file:
         with open(args.grn_file, 'r') as f:
             gen = 0
-            for g in f.readlines():
+            lines = f.readlines()
+            for g in lines:
                 grn = newgrn()
                 grn.from_str(g)
                 p.generation = gen
-                p.eval(grn)
+                fit = p.eval(grn)
+                with open(log_file, 'a') as f:
+                    f.write('G,%s,%d,%d,%f,%d,%f,%f\n' % (
+                        datetime.now().isoformat(),
+                        gen, len(lines),
+                        fit, grn.size(), fit, 0.0))
                 gen += 1
     else:
         for i in range(20):
             grn = newgrn()
             grn.random(p.nin, p.nout, 1)
             p.generation = i
-            p.eval(grn)
+            fit = p.eval(grn)
+            with open(log_file, 'a') as f:
+                f.write('G,%s,%d,%d,%f,%d,%f,%f\n' % (
+                    datetime.now().isoformat(),
+                    i, 20, fit, grn.size(), fit, 0.0))

@@ -8,7 +8,7 @@ from keras.models import Sequential
 from keras.optimizers import Adam
 from keras import backend as K
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Flatten, Convolution2D, Permute
+from keras.layers import Dense, Activation, Flatten, Convolution2D, Permute, Reshape
 from keras.layers.recurrent import LSTM
 from keras.optimizers import Adam
 
@@ -30,6 +30,7 @@ class DQNProblem(Problem):
     def __init__(self, log_file, seed=0, learn=True, env_name='CartPole-v0',
                  nsteps=10000, warmup=10):
         self.log_file = log_file
+        self.env_name = env_name
         self.env = gym.make(env_name)
         self.nb_actions = self.env.action_space.n
         self.seed = seed
@@ -73,17 +74,18 @@ class DQNProblem(Problem):
         for i in range(len(final.history['episode_reward'])):
             fit += final.history['episode_reward'][i]
         fit /= len(final.history['episode_reward'])
-        if self.env == "Acrobot-v1":
+        if self.env_name == "Acrobot-v1":
             fit += 500
-        elif self.env == "MountainCar-v0":
+        elif self.env_name == "MountainCar-v0":
             fit += 200
 
         with open(self.log_file, 'a') as f:
-            for i in range(len(history.history['episode_reward'])):
-                f.write('L,%s,%d,%d,%d,%f\n' % (
-                    datetime.now().isoformat(),
-                    self.generation, self.eval_count, i,
-                    history.history['episode_reward'][i]))
+            if 'episode_reward' in history.history:
+                for i in range(len(history.history['episode_reward'])):
+                    f.write('L,%s,%d,%d,%d,%f\n' % (
+                        datetime.now().isoformat(),
+                        self.generation, self.eval_count, i,
+                        history.history['episode_reward'][i]))
             f.write('M,%s,%d,%d,%f\n' % (
                 datetime.now().isoformat(),
                 self.generation, self.eval_count, fit))
@@ -109,9 +111,9 @@ class SLGym(DQNProblem):
         model = Sequential()
         model.add(Flatten(input_shape=(1,) + self.env.observation_space.shape))
         # model GRN layer
-        layer = GRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+        layer = GRNLayer(grn_str)
         if not self.learn:
-            layer = FixedGRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+            layer = FixedGRNLayer(grn_str)
         model.add(layer)
 
         return model
@@ -130,9 +132,9 @@ class Gym(DQNProblem):
         model.add(Activation('relu'))
 
         # model GRN layer
-        layer = GRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+        layer = GRNLayer(grn_str)
         if not self.learn:
-            layer = FixedGRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+            layer = FixedGRNLayer(grn_str)
         model.add(layer)
 
         # model LSTM layer
@@ -185,9 +187,9 @@ class Atari(DQNProblem):
         model.add(Activation('relu'))
         model.add(Dense(self.nin))
         model.add(Activation('relu'))
-        layer = GRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+        layer = GRNLayer(grn_str)
         if not self.learn:
-            layer = FixedGRNLayer(grn_str, warmup_count=0, pmin=-10.0, pmax=10.0)
+            layer = FixedGRNLayer(grn_str)
         model.add(layer)
         model.add(Dense(self.nout))
         model.add(Activation('relu'))
