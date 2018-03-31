@@ -73,6 +73,10 @@ class DQNProblem(Problem):
         for i in range(len(final.history['episode_reward'])):
             fit += final.history['episode_reward'][i]
         fit /= len(final.history['episode_reward'])
+        if self.env == "Acrobot-v1":
+            fit += 500
+        elif self.env == "MountainCar-v0":
+            fit += 200
 
         with open(self.log_file, 'a') as f:
             for i in range(len(history.history['episode_reward'])):
