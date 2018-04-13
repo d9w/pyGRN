@@ -53,6 +53,3 @@ class Energy(TimeRegression):
         self.cacheable = False
         self.logfile = os.path.join(
             root_dir, 'logs/energy_' + namestr + '.log')
-        # killfile for stopping the job
-        self.killfile = os.path.join(root_dir, 'kf/' + namestr)
-        open(self.killfile, 'a').close()

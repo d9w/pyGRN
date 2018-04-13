@@ -2,7 +2,10 @@ from pygrn import grns, problems, evolution, config
 
 
 def test_evolution_boston():
-    config.POPULATION_SIZE = 20
+    config.POPULATION_SIZE = 5
+    config.INITIALIZATION_DUPLICATION = 2
+    config.START_SPECIES_THRESHOLD = 0.05
+    config.MIN_SPECIES_SIZE = 1
     p = problems.Boston()
     newgrn = lambda: grns.DiffGRN()
     grneat = evolution.Evolution(p, newgrn)

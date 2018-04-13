@@ -39,5 +39,3 @@ class AirQuality(TimeRegression):
         self.nout = 1
         self.cacheable = False
         self.logfile = os.path.join(root_dir, 'logs/air_' + namestr + '.log')
-        self.killfile = os.path.join(root_dir, 'kf/' + namestr)
-        open(self.killfile, 'a').close()

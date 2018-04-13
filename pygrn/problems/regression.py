@@ -19,12 +19,8 @@ class Regression(Problem):
         self.error *= self.error_decrease
 
     def eval(self, grn):
-        if not os.path.isfile(self.killfile):
-            raise FileNotFoundError('Killfile has been deleted ' +
-                                    'stopping process')
-
         model = Sequential()
-        layer = GRNLayer(grn, warmup_count=1, input_shape=(self.nin,))
+        layer = GRNLayer(str(grn), warmup_count=1, input_shape=(self.nin,))
         model.add(layer)
 
         model.compile(loss='mean_squared_error', optimizer=Adam())

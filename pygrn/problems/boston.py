@@ -44,5 +44,3 @@ class Boston(Regression):
         self.cacheable = False
         self.logfile = os.path.join(root_dir,
                                     'logs/boston_' + namestr + '.log')
-        self.killfile = os.path.join(root_dir, 'kf/' + namestr)
-        open(self.killfile, 'a').close()
