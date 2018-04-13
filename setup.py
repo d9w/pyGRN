@@ -8,6 +8,7 @@ setup(
     install_requires=[
         'atari-py',
         'certifi',
+        'codecov',
         'flake8',
         'gym',
         'h5py',
@@ -19,6 +20,7 @@ setup(
         'Pillow',
         'pybullet',
         'pytest',
+        'pytest-cov',
         'PyYAML',
         'scipy',
         'sklearn',
