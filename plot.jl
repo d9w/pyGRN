@@ -10,8 +10,11 @@ Gadfly.push_theme(Theme(major_label_font="Droid Sans",
                         lowlight_color=c->RGBA{Float32}(c.r, c.g, c.b, 0.2),
                         key_label_font_size=14pt, key_position=:right))
 
-colors = [colorant"#e41a1c", colorant"#377eb8", colorant"#4daf4a",
-          colorant"#984ea3", colorant"#ff7f00", colorant"#ffff33"]
+colors = [colorant"#1f78b4", colorant"#33a02c", colorant"#e31a1c",
+          colorant"#ff7f00", colorant"#6a3d9a", colorant"#a6cee3",
+          colorant"#b2df8a", colorant"#fb9a99", colorant"#fdbf6f",
+          colorant"#cab2d6"]
+
 
 function std_or_z(x)
     s = std(x)
@@ -19,6 +22,50 @@ function std_or_z(x)
         s = 0.0
     end
     s
+end
+
+
+function get_res_slgym(filename::String)
+    names = [:ltype, :seed, :timestamp, :Problem, :Generation, :Evaluations,
+             :Steps, :Reward]
+    res = readtable(filename, separator=',', header=false, names=names)
+    res[:Reward][(res[:Problem] .== "Acrobot-v1").&(res[:Steps] .== 0)] .-= 500
+    res
+end
+
+function get_gens(res::DataFrame)
+    maxs = by(res, [:Problem, :Steps, :Generation, :seed],
+              df->DataFrame(Reward=maximum(df[:Reward])))
+    gens = by(maxs, [:Problem, :Steps, :Generation],
+              df->DataFrame(Rmean=mean(df[:Reward]), Rstd=std_or_z(df[:Reward])))
+    gens[:Rlow] = gens[:Rmean] .- 0.5*gens[:Rstd]
+    gens[:Rhigh] = gens[:Rmean] .+ 0.5*gens[:Rstd]
+    gens
+end
+
+function plot_gym_gens(gens::DataFrame, problem::String="Acrobot-v1",
+                       outfile::String="acrobot.pdf";
+                       ylabel="Reward", xlabel="Generation",
+                       key_position=:right)
+
+    pgens = @from i in gens begin
+        @where i.Problem == problem
+        @select i; @collect DataFrame
+    end
+
+    xmin=minimum(pgens[:Generation])
+    xmax=maximum(pgens[:Generation])
+    ymin=minimum(pgens[:Rlow])
+    ymax=maximum(pgens[:Rhigh])
+
+    plt = plot(pgens, x=:Generation, y=:Rmean, ymin=:Rlow, ymax=:Rhigh,
+               color=:Steps, Geom.line, Geom.ribbon,
+               Scale.color_discrete_manual(colors...),
+               Guide.ylabel(ylabel), Guide.xlabel(xlabel),
+               Coord.cartesian(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax),
+               Guide.title(problem))
+    draw(PDF(outfile, 8inch, 6inch), plt);
+    plt
 end
 
 function get_sizes(filename::String)
