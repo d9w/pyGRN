@@ -7,10 +7,9 @@ from PIL import Image
 from keras.models import Sequential
 from keras.optimizers import Adam
 from keras import backend as K
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Flatten, Convolution2D, Permute, Reshape
+from keras.layers import Dense, Activation, Flatten, Convolution2D
+from keras.layers import Permute, Reshape
 from keras.layers.recurrent import LSTM
-from keras.optimizers import Adam
 
 from rl.agents.dqn import DQNAgent
 from rl.policy import BoltzmannQPolicy
@@ -153,10 +152,10 @@ class AtariProcessor(Processor):
     def process_observation(self, observation):
         assert observation.ndim == 3  # (height, width, channel)
         img = Image.fromarray(observation)
-        img = img.resize(ATARI_INPUT_SHAPE).convert('L')  # resize and convert to grayscale
+        img = img.resize(ATARI_INPUT_SHAPE).convert('L')
         processed_observation = np.array(img)
         assert processed_observation.shape == ATARI_INPUT_SHAPE
-        return processed_observation.astype('uint8')  # saves storage in experience memory
+        return processed_observation.astype('uint8')
 
     def process_state_batch(self, batch):
         processed_batch = batch.astype('float32') / 255.
