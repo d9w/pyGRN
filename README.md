@@ -1,7 +1,7 @@
 # pyGRN
 
 [![Build Status](https://travis-ci.org/d9w/pyGRN.svg?branch=master)](https://travis-ci.org/d9w/pyGRN)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/d9w/pyGRN/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/d9w/pyGRN/branch/master/graph/badge.svg)](https://codecov.io/gh/d9w/pyGRN)
 
 Artificial Gene Regulatory Network model and evolution in Python
