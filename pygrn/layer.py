@@ -54,7 +54,7 @@ class GRNLayer(Layer):
         self.grn.tf_beta = self.beta
         self.grn.tf_delta = self.delta
 
-        self.input_spec = InputSpec(min_ndim=2)
+        # self.input_spec = InputSpec(min_ndim=2)
         self.built = True
 
     def set_learned_genes(self):
@@ -68,24 +68,22 @@ class GRNLayer(Layer):
     def call(self, inputs):
         self.grn.setup()
         self.grn.warmup(self.warmup_count)
-        out_conc = self.grn.tf_output_conc
         reg_conc = self.grn.tf_regulatory_conc
 
         def grn_func(inp):
-            inpmin = K.tf.reduce_min(inp)
-            inpmax = K.tf.reduce_min(inp)
-            idiff = inpmax - inpmin
-            inp = K.tf.cond(K.tf.greater(idiff, 0),
-                            lambda: (inp - inpmin) / (inpmax - inpmin),
-                            lambda: inp)
+            # inpmin = K.tf.reduce_min(inp)
+            # inpmax = K.tf.reduce_max(inp)
+            # idiff = inpmax - inpmin
+            # inp = K.tf.cond(K.tf.greater(idiff, 0),
+            #                 lambda: (inp - inpmin) / (inpmax - inpmin),
+            #                 lambda: inp)
             self.grn.tf_input_conc = inp
-            self.grn.tf_output_conc = out_conc
             self.grn.tf_regulatory_conc = reg_conc
             self.grn.step()
             outs = self.grn.tf_output_conc
-            outs = K.tf.cond(K.tf.greater(idiff, 0),
-                             lambda: (outs - inpmin) / (inpmax - inpmin),
-                             lambda: outs)
+            # outs = K.tf.cond(K.tf.greater(idiff, 0),
+            #                  lambda: (outs - inpmin) / (inpmax - inpmin),
+            #                  lambda: outs)
             return outs
 
         return K.tf.map_fn(grn_func, inputs)

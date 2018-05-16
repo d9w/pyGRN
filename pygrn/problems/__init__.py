@@ -7,3 +7,4 @@ from .eeg import EEG
 from .energy import Energy
 from .air_quality import AirQuality
 from .dqn import SLGym, Gym, Atari
+from .prediction import Prediction
