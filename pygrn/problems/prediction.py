@@ -56,11 +56,13 @@ class Prediction(Problem):
 
     def eval(self, grn):
         model = Sequential()
-        layer = self.model_type(self.nout, stateful=True,
-                                batch_input_shape=(self.batch_size,
-                                                   self.x_train.shape[1],
-                                                   self.x_train.shape[2]))
-        model.add(layer)
+        batch_input_shape=(self.batch_size, self.x_train.shape[1], self.x_train.shape[2])
+        if self.model_type == LSTM or self.model_type == SimpleRNN:
+            layer = self.model_type(self.nout, stateful=True, batch_input_shape=batch_input_shape)
+            model.add(layer)
+        else:
+            layer = self.model_type(str(grn), stateful=True, batch_input_shape=batch_input_shape)
+            model.add(layer)
         model.add(Dense(1))
         model.compile(loss='mean_squared_error', optimizer='adam')
 
