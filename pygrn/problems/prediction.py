@@ -21,9 +21,11 @@ class Prediction(Problem):
         train = pd.read_csv(train_data_file).values
         test = pd.read_csv(test_data_file).values
 
-        X, y = train[:, 0:-1], train[:, -1]
+        ntrain = len(train)-75000
+        ntest = 25000
+        X, y = train[:-ntrain, 0:-1], train[:-ntrain, -1]
         X = X.reshape(X.shape[0], 1, X.shape[1])
-        Xtest, ytest = test[:, 0:-1], test[:, -1]
+        Xtest, ytest = test[:ntest, 0:-1], test[:ntest, -1]
         Xtest = Xtest.reshape(Xtest.shape[0], 1, Xtest.shape[1])
 
         self.x_train = X
