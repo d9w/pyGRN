@@ -17,6 +17,8 @@ parser.add_argument('--stateful', dest='stateful', action='store_const',
                     const=True, default=False, help='Stateful model')
 parser.add_argument('--id', type=str, help='Run id for logging')
 parser.add_argument('--model', type=str, help='Model')
+parser.add_argument('--train_size', type=int, default=75000,
+                    help='Number of training samples')
 parser.add_argument('--seed', type=int, help='Random seed',
                     default=0)
 parser.add_argument('--problem', type=str, help='Problem',
@@ -40,7 +42,7 @@ p = eval('problems.' + args.problem)
 p = p(log_file, seed=args.seed, learn=args.learn, epochs=args.epochs,
       data_dir=data_dir, lamarckian=args.lamarckian,
       unsupervised=args.unsupervised, stateful=args.stateful,
-      model=args.model)
+      model=args.model, ntrain=args.train_size)
 
 newgrn = lambda: grns.DiffGRN()
 if args.evo:

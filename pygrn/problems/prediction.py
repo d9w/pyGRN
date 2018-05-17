@@ -15,14 +15,14 @@ class Prediction(Problem):
 
     def __init__(self, log_file, seed=0, learn=True, batch_size=1,
                  epochs=1, data_dir='./', lamarckian=False, unsupervised=True,
-                 stateful=True, model='RGRN'):
+                 stateful=True, model='RGRN', ntrain=75000):
         train_data_file = os.path.join(data_dir, 'kliens_train.csv')
         test_data_file = os.path.join(data_dir, 'kliens_train.csv')
         train = pd.read_csv(train_data_file).values
         test = pd.read_csv(test_data_file).values
 
-        ntrain = len(train)-75000
-        ntest = 25000
+        ntrain = len(train)-ntrain
+        ntest = round(ntrain/3.0)
         X, y = train[:-ntrain, 0:-1], train[:-ntrain, -1]
         X = X.reshape(X.shape[0], 1, X.shape[1])
         Xtest, ytest = test[:ntest, 0:-1], test[:ntest, -1]
@@ -79,7 +79,7 @@ class Prediction(Problem):
                     for l in range(len(history.history['loss'])):
                         train_fit = history.history['loss'][l]
                         error += [train_fit]
-                        f.write('L,%s,%d,%d,%f\n' % (datetime.now().isoformat(),
+                        f.write('L,%s,%d,%d,%e\n' % (datetime.now().isoformat(),
                                                     self.generation, i,
                                                     train_fit))
             # lamarckian evolution
@@ -95,7 +95,7 @@ class Prediction(Problem):
         if np.isnan(fit):
             fit = -1e10
         with open(self.logfile, 'a') as f:
-            f.write('M,%s,%d,%f,%f,%f\n' % (datetime.now().isoformat(),
+            f.write('M,%s,%d,%e,%e,%e\n' % (datetime.now().isoformat(),
                                             self.generation, start_error, end_error, fit))
         del model
         K.clear_session()
