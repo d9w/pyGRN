@@ -46,6 +46,14 @@ class GRNCell(Layer):
         self.grn.tf_delta = self.delta
         self.built = True
 
+    def set_learned_genes(self, g):
+        weights = self.get_weights()
+        g.identifiers = weights[0]
+        g.enhancers = weights[1]
+        g.inhibitors = weights[2]
+        g.beta = float(weights[3][0])
+        g.delta = float(weights[4][0])
+
     def call(self, inputs, states):
         # TODO: only works for batch size of 1
         self.grn.setup()
@@ -71,6 +79,9 @@ class RGRN(RNN):
     def reset_states(self):
         self.cell.grn.reset()
         super(RGRN, self).reset_states()
+
+    def set_learned_genes(self, g):
+        self.cell.set_learned_genes(g)
 
     def get_config(self):
         config = {'grn_str': str(self.grn)}

@@ -84,7 +84,7 @@ class Prediction(Problem):
                                                     train_fit))
             # lamarckian evolution
             if self.lamarckian:
-                layer.set_learned_genes()
+                layer.set_learned_genes(grn)
         start_error = error[0]
         end_error = error[-1]
         fit = start_error - end_error
