@@ -16,7 +16,7 @@ class Population:
 
         while len(self.offspring) < config.POPULATION_SIZE:
             g = self.new_grn_function()
-            g.random(nin, nout, 1)
+            g.random(nin, nout, config.START_REGULATORY_SIZE)
 
             # Create a small species if there isn't enough space
             num_create = min(config.INITIALIZATION_DUPLICATION,
