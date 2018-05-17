@@ -75,7 +75,7 @@ class Prediction(Problem):
         batch_input_shape=(self.batch_size, self.x_train.shape[1], self.x_train.shape[2])
         start_time = datetime.now()
         if self.model_type == LSTM or self.model_type == SimpleRNN:
-            np.random.seed(round(self.grn.identifiers[0]*100))
+            np.random.seed(int(np.round(grn.identifiers[0]*100)))
             layer = self.model_type(self.nout, stateful=self.stateful,
                                     batch_input_shape=batch_input_shape)
             model.add(layer)
