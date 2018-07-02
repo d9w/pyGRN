@@ -47,9 +47,12 @@ config.START_REGULATORY_SIZE = args.nreg
 p = eval('problems.' + args.problem)
 p = p(log_file, seed=args.seed, learn=args.learn, epochs=args.epochs,
       data_dir=data_dir, lamarckian=args.lamarckian,
-      unsupervised=args.unsupervised, stateful=args.stateful,
-      model=args.model, ntrain=args.ntrain, ntest=args.ntest,
-      shift=args.shift, lag=args.lag)
+      stateful=args.stateful, model=args.model)
+# p = p(log_file, seed=args.seed, learn=args.learn, epochs=args.epochs,
+#       data_dir=data_dir, lamarckian=args.lamarckian,
+#       unsupervised=args.unsupervised, stateful=args.stateful,
+#       model=args.model, ntrain=args.ntrain, ntest=args.ntest,
+#       shift=args.shift, lag=args.lag)
 
 newgrn = lambda: grns.DiffGRN()
 if args.evo:
