@@ -59,16 +59,14 @@ if args.evo:
     grneat = evolution.Evolution(p, newgrn, run_id=args.id,
                                  grn_dir=grn_dir, log_dir=log_dir)
     grneat.run(args.gens)
-elif args.grn_file:
-    with open(args.grns, 'r') as f:
-        for g in f.readlines():
-            grn = newgrn()
-            grn.from_str(g)
-            p.generation_function(None, args.generation)
-            p.eval(grn)
 else:
     for i in range(20):
         grn = newgrn()
-        grn.random(p.nin, p.nout, args.nreg)
+        if args.grn_file:
+            with open(args.grns, 'r') as f:
+                grns = f.readlines()
+                grn.from_str(grns[-1])
+        else:
+            grn.random(p.nin, p.nout, args.nreg)
         p.generation_function(None, i)
         p.eval(grn)

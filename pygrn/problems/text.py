@@ -71,7 +71,7 @@ class TextGen(Problem):
 
     def eval(self, grn):
         seed = np.random.randint(1e5)
-        np.random.seed(self.seed)
+        np.random.seed(self.seed + self.generation)
         model = Sequential()
         batch_input_shape = (self.batch_size, self.maxlen, len(self.chars))
         start_time = datetime.now()
@@ -91,7 +91,7 @@ class TextGen(Problem):
             for i in range(self.epochs): # to reset states between each epoch
                 history = model.fit(self.x, self.y,
                                     batch_size=self.batch_size,
-                                    epochs=1, verbose=1, shuffle=False)
+                                    epochs=1, verbose=0, shuffle=False)
                 model.reset_states()
                 with open(self.logfile, 'a') as f:
                     for l in range(len(history.history['loss'])):
