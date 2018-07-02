@@ -18,9 +18,9 @@ from pygrn import RGRN
 
 class TextGen(Problem):
 
-    def __init__(self, log_file, seed=0, learn=True, batch_size=1,
+    def __init__(self, log_file, seed=0, learn=True, batch_size=128,
                  epochs=1, data_dir='./', lamarckian=False,
-                 stateful=True, model='RGRN'):
+                 stateful=False, model='RGRN'):
         with open(os.path.join(data_dir, 'nietzsche.txt'), encoding='utf-8') as f:
             text = f.read().lower()
         print('corpus length:', len(text))
@@ -50,15 +50,18 @@ class TextGen(Problem):
                 x[i, t, char_indices[char]] = 1
             y[i, char_indices[next_chars[i]]] = 1
 
-        self.x = x
-        self.y = y
+        # nsamples = int(np.floor(len(sentences) / batch_size) * batch_size)
+        # nsamples = 128000
+        nsamples = len(sentences)
+        self.x = x[:nsamples, :, :]
+        self.y = y[:nsamples]
         self.batch_size = batch_size
         self.epochs = epochs
         self.learn = learn
         self.generation = 0
         self.seed = seed
         self.lamarckian = lamarckian
-        self.stateful = stateful
+        self.stateful = False # stateful not necessary
         self.model_type = eval(model)
 
         self.nin = len(chars)
@@ -73,15 +76,13 @@ class TextGen(Problem):
         seed = np.random.randint(1e5)
         np.random.seed(self.seed + self.generation)
         model = Sequential()
-        batch_input_shape = (self.batch_size, self.maxlen, len(self.chars))
+        input_shape = (self.maxlen, len(self.chars))
         start_time = datetime.now()
         if self.model_type == LSTM or self.model_type == SimpleRNN:
-            layer = self.model_type(self.nout, stateful=self.stateful,
-                                    batch_input_shape=batch_input_shape)
+            layer = self.model_type(self.nout, input_shape=input_shape)
             model.add(layer)
         else:
-            layer = self.model_type(str(grn), stateful=self.stateful,
-                                    batch_input_shape=batch_input_shape)
+            layer = self.model_type(str(grn), input_shape=input_shape)
             model.add(layer)
         model.add(Dense(len(self.chars)))
         model.add(Activation('softmax'))
@@ -91,7 +92,7 @@ class TextGen(Problem):
             for i in range(self.epochs): # to reset states between each epoch
                 history = model.fit(self.x, self.y,
                                     batch_size=self.batch_size,
-                                    epochs=1, verbose=0, shuffle=False)
+                                    epochs=1, verbose=1, shuffle=False)
                 model.reset_states()
                 with open(self.logfile, 'a') as f:
                     for l in range(len(history.history['loss'])):
