@@ -105,15 +105,15 @@ class TextGen(Problem):
             # lamarckian evolution
             if self.lamarckian:
                 layer.set_learned_genes(grn)
+        start_error = error[0]
+        end_error = error[-1]
         with open(self.logfile, 'a') as f:
-            f.write('M,%e,%d,%s,%d,%d,%d,%d,%e,%e,%e,%e\n' % (
+            f.write('M,%e,%d,%s,%d,%d,%d,%d,%e,%e\n' % (
                 (datetime.now()-start_time).total_seconds(),
                 self.seed, self.model_type.__name__, self.epochs,
                 self.lamarckian, self.stateful,
-                self.generation, start_error, end_error, total_error, fit))
+                self.generation, start_error, end_error))
         del model
         K.clear_session()
         np.random.seed(seed)
-        return fit
-
-
+        return end_error
