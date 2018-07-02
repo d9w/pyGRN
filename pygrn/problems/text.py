@@ -88,6 +88,7 @@ class TextGen(Problem):
         model.add(Activation('softmax'))
         model.compile(loss='mean_squared_error', optimizer=RMSprop(lr=0.01))
 
+        error = []
         if self.learn:
             for i in range(self.epochs): # to reset states between each epoch
                 history = model.fit(self.x, self.y,
@@ -97,6 +98,7 @@ class TextGen(Problem):
                 with open(self.logfile, 'a') as f:
                     for l in range(len(history.history['loss'])):
                         train_fit = history.history['loss'][l]
+                        error += [train_fit]
                         f.write('L,%e,%d,%s,%d,%d,%d,%d,%d,%e\n' % (
                             (datetime.now()-start_time).total_seconds(),
                             self.seed, self.model_type.__name__, self.epochs,
