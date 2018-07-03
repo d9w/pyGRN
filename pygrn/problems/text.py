@@ -20,7 +20,7 @@ class TextGen(Problem):
 
     def __init__(self, log_file, seed=0, learn=True, batch_size=128,
                  epochs=1, data_dir='./', lamarckian=False,
-                 stateful=False, model='RGRN'):
+                 nout=128, stateful=False, model='RGRN'):
         with open(os.path.join(data_dir, 'nietzsche.txt'), encoding='utf-8') as f:
             text = f.read().lower()
         print('corpus length:', len(text))
@@ -65,7 +65,7 @@ class TextGen(Problem):
         self.model_type = eval(model)
 
         self.nin = len(chars)
-        self.nout = 128
+        self.nout = nout
         self.cacheable = False
         self.logfile = log_file
 

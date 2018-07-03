@@ -23,6 +23,10 @@ parser.add_argument('--shift', type=int, default=1, help='Data shift')
 parser.add_argument('--lag', type=int, default=60, help='Time step for prediction')
 parser.add_argument('--nreg', type=int, default=10,
                     help='Number of starting regulatory proteins')
+parser.add_argument('--nout', type=int, default=1,
+                    help='Number of outputs proteins, unit size for LSTM or SimpleRNN')
+parser.add_argument('--batch_size', type=int, default=1,
+                    help='Batch size')
 parser.add_argument('--seed', type=int, help='Random seed',
                     default=0)
 parser.add_argument('--problem', type=str, help='Problem',
@@ -47,7 +51,8 @@ config.START_REGULATORY_SIZE = args.nreg
 p = eval('problems.' + args.problem)
 p = p(log_file, seed=args.seed, learn=args.learn, epochs=args.epochs,
       data_dir=data_dir, lamarckian=args.lamarckian,
-      stateful=args.stateful, model=args.model)
+      stateful=args.stateful, model=args.model,
+      nout=args.nout, batch_size=args.batch_size)
 # p = p(log_file, seed=args.seed, learn=args.learn, epochs=args.epochs,
 #       data_dir=data_dir, lamarckian=args.lamarckian,
 #       unsupervised=args.unsupervised, stateful=args.stateful,
