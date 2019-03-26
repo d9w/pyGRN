@@ -24,7 +24,7 @@ setup(
         'PyYAML',
         'scipy',
         'sklearn',
-        'tensorflow',
+        'tensorflow-gpu',
         'tqdm'],
     license='',
     long_description=open('README.md').read(),
