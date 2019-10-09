@@ -1,6 +1,5 @@
 import abc
 import numpy as np
-import tensorflow as tf
 from datetime import datetime
 
 
@@ -36,28 +35,6 @@ class Random(Problem):
 
     def eval(self, grn):
         return np.random.rand()
-
-
-class TFRandom(Problem):
-    nin = 10
-    nout = 5
-    cacheable = False
-
-    def eval(self, grn):
-        grn.setup()
-        grn.warmup(25)
-        fit = 0.0
-        for i in range(10):
-            t1 = datetime.now()
-            grn.set_input(np.random.rand(10))
-            grn.step()
-            with tf.Session() as sess:
-                fit += sess.run(tf.reduce_sum(grn.get_output_tensor()))
-                print(len(sess.graph.get_operations()))
-            t2 = datetime.now()
-            print(t2 - t1)
-        print(len(tf.get_default_graph().get_operations()))
-        return fit
 
 
 class Static(Problem):

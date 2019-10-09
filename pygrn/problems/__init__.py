@@ -1,5 +1,5 @@
-from .base import Random, Static, Counter, TFRandom
-from .regression import Regression
+from .base import Random, Static, Counter
+# from .regression import Regression
 # from .time_regression import TimeRegression
 # from .double import DoubleFrequency
 # from .boston import Boston

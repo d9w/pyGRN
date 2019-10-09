@@ -6,10 +6,8 @@ setup(
     version='0.1',
     packages=find_packages(),
     install_requires=[
-        'keras',
         'numpy',
         'PyYAML',
-        'tensorflow',
         'tqdm'],
     license='',
     long_description=open('README.md').read(),
