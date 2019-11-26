@@ -3,8 +3,8 @@ from copy import deepcopy
 from .base import GRN
 
 
-class ClassicGRN(GRN):
-    """Classic CPU-based GRN
+class StochasticGRN(GRN):
+    """Stochastic CPU-based GRN
 
     Dynamics equations are written mostly in loop form
     """
@@ -12,7 +12,9 @@ class ClassicGRN(GRN):
     next_concentration = []
     enhance_match = []
     inhibit_match = []
-    
+    dt = 0  # useless imo, should be fine as a local variable no ?
+    total_t = 0
+
     def __init__(self):
         pass
 
@@ -65,23 +67,23 @@ class ClassicGRN(GRN):
     def step(self):
         if len(self.next_concentration) != len(self.concentration):
             self.next_concentration = np.zeros(len(self.concentration))
+        for i in range(len(self.identifiers)):
+            for j in range(len(self.identifiers)):
+                r_total += (self.enhance_match[i, j] - self.inhibit_match[i, j]) * self.concentration[i]
+        self.dt = (1/r_total * np.log(1/np.random.rand()))
         sum_concentration = 0.0
         for k in range(len(self.identifiers)):
             if k < self.num_input:
                 self.next_concentration[k] = self.concentration[k]
             else:
-                enhance = 0.0
-                inhibit = 0.0
+                dConcentration = 0.0
                 for j in range(len(self.identifiers)):
                     if not (j >= self.num_input and
                             j < (self.num_output + self.num_input)):
-                        enhance += (self.concentration[j] *
-                                    self.enhance_match[j, k])
-                        inhibit += (self.concentration[j] *
-                                    self.inhibit_match[j, k])
-                diff = self.delta / len(self.identifiers) * (enhance - inhibit)
+                        dConcentration += (self.concentration[j] * self.enhance_match[j, k]) - (self.concentration[j] * self.inhibit_match[j, k])
+                diff = self.delta / len(self.identifiers) * dConcentration
                 self.next_concentration[k] = max(0.0,
-                                                 self.concentration[k] + diff)
+                                                 self.concentration[k] + diff) * self.dt
                 sum_concentration += self.next_concentration[k]
         if sum_concentration > 0:
             for k in range(len(self.identifiers)):
@@ -90,6 +92,7 @@ class ClassicGRN(GRN):
                         1.0, self.next_concentration[k] / sum_concentration)
 
         self.concentration = self.next_concentration
+        self.total_t+=self.dt
         return self
 
     def clone(self):
