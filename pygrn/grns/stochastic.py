@@ -12,7 +12,6 @@ class StochasticGRN(GRN):
     next_concentration = []
     enhance_match = []
     inhibit_match = []
-    dt = 0  # useless imo, should be fine as a local variable no ?
     total_t = 0
 
     def __init__(self):
@@ -67,10 +66,11 @@ class StochasticGRN(GRN):
     def step(self):
         if len(self.next_concentration) != len(self.concentration):
             self.next_concentration = np.zeros(len(self.concentration))
+        r_total = 0
         for i in range(len(self.identifiers)):
             for j in range(len(self.identifiers)):
-                r_total += (self.enhance_match[i, j] - self.inhibit_match[i, j]) * self.concentration[i]
-        self.dt = (1/r_total * np.log(1/np.random.rand()))
+                r_total += abs(self.enhance_match[i, j] - self.inhibit_match[i, j]) * self.concentration[i]
+        self.dt = (1/(r_total+0.0000001) * np.log(1/np.random.rand()))
         sum_concentration = 0.0
         for k in range(len(self.identifiers)):
             if k < self.num_input:

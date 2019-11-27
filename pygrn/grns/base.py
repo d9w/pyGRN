@@ -21,6 +21,8 @@ class GRN(abc.ABC):
     beta = 0.5
     delta = 0.5
 
+    dt = 1
+
     @abc.abstractmethod
     def __init__(self):
         pass
@@ -151,3 +153,6 @@ class GRN(abc.ABC):
 
         distance /= glarge.size() + 2
         return distance
+
+    def get_dt(self):
+        return self.dt
