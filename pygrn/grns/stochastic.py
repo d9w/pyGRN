@@ -13,9 +13,10 @@ class StochasticGRN(GRN):
     enhance_match = []
     inhibit_match = []
     total_t = 0
+    max_dt = 10
 
-    def __init__(self):
-        pass
+    def __init__(self, max_dt = 10):
+        self.max_dt = max_dt
 
     def reset(self):
         self.concentration = np.ones(
@@ -70,7 +71,12 @@ class StochasticGRN(GRN):
         for i in range(len(self.identifiers)):
             for j in range(len(self.identifiers)):
                 r_total += abs(self.enhance_match[i, j] - self.inhibit_match[i, j]) * self.concentration[i]
-        self.dt = (1/(r_total+0.0000001) * np.log(1/np.random.rand()))
+        if r_total == 0:
+            print(self.concentration)
+        r_tot = 1/(r_total+0.0000001)
+        self.dt = r_tot * np.log(1/np.random.rand())
+        while self.dt > self.max_dt:
+            self.dt = r_tot * np.log(1/np.random.rand())
         sum_concentration = 0.0
         for k in range(len(self.identifiers)):
             if k < self.num_input:
